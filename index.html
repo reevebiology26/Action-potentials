@@ -1,0 +1,1964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR A-Level Biology: Neuronal Communication</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons CDN -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Google Fonts: Inter, Space Grotesk & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['"Space Grotesk"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        axon: {
+                            950: '#070b14',
+                            900: '#0f172a',
+                            800: '#172542',
+                            700: '#1e355e',
+                        },
+                        volt: {
+                            50: '#f7fee7',
+                            100: '#ecfccb',
+                            200: '#d9f99d',
+                            400: '#a3e635',
+                            500: '#84cc16',
+                            600: '#65a30d',
+                            700: '#4d7c0f',
+                            800: '#3f6212',
+                        },
+                        cobalt: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                        },
+                        frost: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                        },
+                        crimson: {
+                            500: '#ef4444',
+                            600: '#dc2626',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #f1f5f9;
+            color: #0f172a;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; }
+        ::-webkit-scrollbar-thumb { background: #2563eb; border-radius: 5px; }
+
+        /* Electrophysiology Oscilloscope Splash Background */
+        .scope-bg {
+            background-color: #070b14;
+            background-image:
+                radial-gradient(circle at 18% 22%, rgba(132, 204, 22, 0.22) 0%, transparent 45%),
+                radial-gradient(circle at 82% 78%, rgba(37, 99, 235, 0.28) 0%, transparent 48%),
+                linear-gradient(155deg, #0f172a 0%, #070b14 100%);
+        }
+
+        /* Theme Animations */
+        @keyframes signalDrift {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.34; }
+            50% { transform: translateY(-20px) rotate(10deg); opacity: 0.72; }
+        }
+        @keyframes spikeFlash {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 4px #84cc16); }
+            40% { transform: scale(1.4) translateY(-3px); filter: drop-shadow(0 0 18px #a3e635); }
+        }
+        @keyframes shakeError {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px) rotate(-3deg); }
+            50% { transform: translateX(5px) rotate(3deg); }
+            75% { transform: translateX(-4px) rotate(-2deg); }
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-signal-drift { animation: signalDrift 8s ease-in-out infinite; }
+        .animate-spike-flash { animation: spikeFlash 0.55s ease-out; }
+        .animate-shake { animation: shakeError 0.4s ease-in-out; }
+        .animate-slide-in { animation: slideIn 0.3s ease-out forwards; }
+
+        /* Navigation Tabs */
+        .tab-btn { transition: all 0.2s ease; border-bottom: 4px solid transparent; }
+        .tab-btn.active {
+            border-bottom-color: #2563eb;
+            color: #1d4ed8;
+            background-color: #eff6ff;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Tap-to-Place SVG Drop Zones */
+        .drop-zone {
+            transition: all 0.2s ease;
+            border: 2px dashed #2563eb;
+            cursor: pointer;
+        }
+        .drop-zone:hover {
+            background-color: #dbeafe;
+            border-color: #1d4ed8;
+            transform: scale(1.03);
+        }
+        .drop-zone.zone-locked {
+            border: 2px solid #4d7c0f;
+            background-color: #3f6212 !important;
+            color: #ffffff !important;
+            cursor: default;
+            transform: none;
+        }
+        .tap-chip {
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+        .tap-chip.selected {
+            background-color: #2563eb !important;
+            color: #ffffff !important;
+            border-color: #1e40af !important;
+            transform: scale(1.03);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+        }
+        .tap-chip.used {
+            opacity: 0.35;
+            pointer-events: none;
+            text-decoration: line-through;
+        }
+
+        /* Fallback Process Sorter Cards */
+        .sort-card {
+            transition: all 0.18s ease;
+            user-select: none;
+        }
+        .sort-card.selected-swap {
+            border-color: #2563eb !important;
+            background-color: #eff6ff !important;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.22);
+        }
+        .sort-card.locked-correct {
+            border-color: #65a30d !important;
+            background-color: #f7fee7 !important;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen overflow-hidden" id="main-body">
+
+    <!-- SPLASH SCREEN -->
+    <div id="splash-screen" class="fixed inset-0 z-50 scope-bg flex flex-col items-center justify-center transition-opacity duration-700 p-4">
+        <!-- Ambient Electrophysiology Icons -->
+        <div class="fixed inset-0 pointer-events-none overflow-hidden">
+            <div class="absolute text-volt-400 text-5xl animate-signal-drift" style="top:14%; left:11%; animation-delay: 0s;"><i class="ph-duotone ph-lightning"></i></div>
+            <div class="absolute text-cobalt-400 text-6xl animate-signal-drift" style="top:18%; left:81%; animation-delay: 2s;"><i class="ph-duotone ph-brain"></i></div>
+            <div class="absolute text-volt-500 text-4xl animate-signal-drift" style="top:75%; left:14%; animation-delay: 3.5s;"><i class="ph-duotone ph-waveform"></i></div>
+            <div class="absolute text-cobalt-200 text-5xl animate-signal-drift" style="top:74%; left:82%; animation-delay: 1.5s;"><i class="ph-duotone ph-activity"></i></div>
+        </div>
+
+        <div class="relative z-10 text-center flex flex-col items-center max-w-3xl bg-axon-900/90 p-8 sm:p-10 rounded-3xl border-2 border-volt-500/60 shadow-[0_0_55px_rgba(132,204,22,0.22)] backdrop-blur-md">
+            <div class="bg-volt-500/15 p-4 rounded-2xl border border-volt-400/40 mb-4">
+                <i class="ph-duotone ph-lightning text-6xl text-volt-400"></i>
+            </div>
+            <h2 class="text-volt-200 font-bold tracking-widest uppercase text-xs sm:text-sm mb-2">OCR A A-Level Biology • Module 5.1.3</h2>
+            <h1 class="font-display text-4xl sm:text-6xl font-extrabold text-white mb-4 tracking-tight">Neuronal Communication</h1>
+            <p class="text-cobalt-100 font-bold tracking-widest uppercase text-xs sm:text-sm mb-6 bg-cobalt-800/80 px-5 py-1.5 rounded-full border border-cobalt-400/40 shadow-inner">Created by Mr Reeve</p>
+            <p class="text-slate-300 font-medium mb-8 text-base sm:text-lg max-w-xl leading-relaxed">
+                Master types of neurone, reflex arcs, sensory receptors &amp; transducers, resting and action potentials, and saltatory conduction.
+            </p>
+
+            <button onclick="enterApp()" class="bg-gradient-to-r from-cobalt-600 to-volt-600 hover:from-cobalt-700 hover:to-volt-700 text-white font-bold text-lg sm:text-xl py-4 px-10 rounded-full shadow-[0_0_25px_rgba(37,99,235,0.45)] transition-all transform hover:scale-105 hover:-translate-y-0.5 flex items-center gap-3 border border-volt-400/50">
+                <i class="ph-bold ph-lightning text-2xl"></i> Start Oscilloscope Lab
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN STICKY HEADER -->
+    <header class="bg-white shadow-md z-40 sticky top-0 border-b border-frost-200 hidden" id="app-header">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="bg-axon-900 p-2.5 rounded-xl text-volt-400 shadow-inner border border-axon-700">
+                    <i class="ph-fill ph-lightning text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-display font-bold text-lg sm:text-xl text-axon-900 leading-tight">Neuronal Communication</h1>
+                    <p class="text-cobalt-700 text-xs font-bold uppercase tracking-wider">OCR A A-Level Biology • Mod. 5.1.3</p>
+                </div>
+            </div>
+
+            <!-- Gamified Spike Streak Counter -->
+            <div id="streak-container" class="bg-frost-50 border border-frost-200 px-4 py-1.5 rounded-full flex items-center gap-3 shadow-sm">
+                <span id="streak-icon" class="text-2xl text-volt-600 inline-flex items-center justify-center transition-transform duration-200">
+                    <i class="ph-fill ph-lightning"></i>
+                </span>
+                <span class="text-xs sm:text-sm font-bold text-axon-900 uppercase tracking-wide">
+                    Spike Streak: <span id="streak-counter" class="text-xl text-cobalt-600 font-black ml-1 font-mono">0</span>
+                </span>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="flex overflow-x-auto bg-frost-50 border-t border-frost-200 shadow-inner">
+            <div class="max-w-7xl mx-auto w-full flex">
+                <button onclick="switchTab('match')" id="nav-match" class="tab-btn active flex items-center gap-2 px-5 py-3.5 font-bold text-sm whitespace-nowrap text-slate-700 hover:bg-frost-100">
+                    <i class="ph-bold ph-arrows-merge text-lg"></i> Mix &amp; Match
+                </button>
+                <button onclick="switchTab('quiz')" id="nav-quiz" class="tab-btn flex items-center gap-2 px-5 py-3.5 font-bold text-sm whitespace-nowrap text-slate-700 hover:bg-frost-100">
+                    <i class="ph-bold ph-list-checks text-lg"></i> Knowledge Quiz
+                </button>
+                <button onclick="switchTab('long')" id="nav-long" class="tab-btn flex items-center gap-2 px-5 py-3.5 font-bold text-sm whitespace-nowrap text-slate-700 hover:bg-frost-100">
+                    <i class="ph-bold ph-pen-nib text-lg"></i> 6-Mark Questions
+                </button>
+                <button onclick="switchTab('lab')" id="nav-lab" class="tab-btn flex items-center gap-2 px-5 py-3.5 font-bold text-sm whitespace-nowrap text-slate-700 hover:bg-frost-100">
+                    <i class="ph-bold ph-waveform text-lg"></i> Oscilloscope Lab
+                </button>
+                <button onclick="switchTab('resources')" id="nav-resources" class="tab-btn flex items-center gap-2 px-5 py-3.5 font-bold text-sm whitespace-nowrap text-slate-700 hover:bg-frost-100">
+                    <i class="ph-bold ph-book-open-text text-lg"></i> Exam Prep &amp; Skills
+                </button>
+                <button onclick="switchTab('dash')" id="nav-dash" class="tab-btn flex items-center gap-2 px-5 py-3.5 font-bold text-sm whitespace-nowrap text-slate-700 hover:bg-frost-100">
+                    <i class="ph-bold ph-chart-polar text-lg"></i> Dashboard
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow max-w-6xl mx-auto w-full p-4 sm:p-6 pb-24 hidden relative" id="main-content">
+
+        <!-- TAB 1: MIX & MATCH (18 Marks) -->
+        <div id="tab-match" class="tab-content active animate-slide-in">
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-frost-200">
+                <div class="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 border-b border-frost-200 pb-4">
+                    <div>
+                        <h2 class="font-display text-2xl font-bold text-axon-900 flex items-center gap-2">
+                            <i class="ph-fill ph-arrows-merge text-cobalt-600"></i> Key Terminology
+                        </h2>
+                        <p class="text-slate-500 text-sm mt-1">Match the OCR A Module 5.1.3 terms to their exact definitions. (Round <span id="match-round" class="font-bold text-cobalt-700">1</span> of 3)</p>
+                    </div>
+                    <div class="font-bold text-axon-900 bg-frost-50 border border-frost-200 px-4 py-2 rounded-xl self-start sm:self-auto">
+                        Score: <span id="match-score" class="text-cobalt-600 font-mono">0</span> / 18
+                    </div>
+                </div>
+
+                <div id="match-complete" class="hidden text-center py-12 bg-volt-50 border border-volt-500 rounded-2xl text-volt-800">
+                    <i class="ph-fill ph-check-circle text-6xl mb-3 text-volt-600"></i>
+                    <h3 class="font-display text-2xl font-bold">Terminology Mastered!</h3>
+                    <p class="text-volt-700 text-sm mt-1">All 18 Neuronal Communication specification definitions matched accurately.</p>
+                </div>
+
+                <div id="match-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-3" id="match-col-q"></div>
+                    <div class="space-y-3" id="match-col-a"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: KNOWLEDGE QUIZ (30 Marks) -->
+        <div id="tab-quiz" class="tab-content animate-slide-in">
+            <div class="max-w-3xl mx-auto bg-axon-900 p-6 sm:p-8 rounded-2xl shadow-xl text-white border-2 border-volt-500/50">
+                <div class="mb-6 flex justify-between items-end border-b border-axon-700 pb-4">
+                    <div>
+                        <h2 class="font-display text-2xl font-bold flex items-center gap-2 text-volt-400">
+                            <i class="ph-fill ph-list-checks"></i> Knowledge Quiz
+                        </h2>
+                        <p class="text-slate-300 text-sm mt-1">Mastery Loop: missed questions return at the end until you achieve 30/30.</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs text-cobalt-400 font-bold uppercase tracking-wider">Mastered</div>
+                        <div class="text-3xl font-black text-white font-mono" id="quiz-progress">0 / 30</div>
+                    </div>
+                </div>
+
+                <div id="quiz-complete" class="hidden text-center py-10">
+                    <i class="ph-fill ph-seal-check text-7xl text-volt-400 mb-4 animate-bounce"></i>
+                    <h3 class="font-display text-3xl font-bold mb-2">100% Quiz Mastery!</h3>
+                    <p class="text-slate-300">You conquered all 30 Neuronal Communication questions.</p>
+                </div>
+
+                <div id="quiz-container">
+                    <div id="quiz-retry-badge" class="hidden inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider bg-volt-500/20 text-volt-200 border border-volt-400/40 px-3 py-1 rounded-full mb-4">
+                        <i class="ph-bold ph-arrows-clockwise"></i> Retry Queue Review
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-semibold mb-6 leading-relaxed" id="quiz-question">Loading...</h3>
+                    <div class="space-y-3" id="quiz-options"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: 6-MARK QUESTIONS (36 Marks) -->
+        <div id="tab-long" class="tab-content animate-slide-in">
+            <div class="mb-6 border-b border-frost-200 pb-4 flex flex-col sm:flex-row sm:justify-between sm:items-end gap-2">
+                <div>
+                    <h2 class="font-display text-2xl font-bold text-axon-900 flex items-center gap-2">
+                        <i class="ph-fill ph-pen-nib text-cobalt-600"></i> 6-Mark Extended Response
+                    </h2>
+                    <p class="text-slate-500 text-sm mt-1">Write your answer, reveal the leveled OCR A model answers, and self-assess (0–6 marks).</p>
+                </div>
+                <div class="font-bold text-axon-900 bg-white border border-frost-200 px-4 py-2 rounded-xl self-start sm:self-auto">
+                    Score: <span id="long-score-live" class="text-cobalt-600 font-mono">0</span> / 36
+                </div>
+            </div>
+            <div id="long-list" class="space-y-8"></div>
+        </div>
+
+        <!-- TAB 4: INTERACTIVE OSCILLOSCOPE & CONDUCTION LAB (10 Marks — Dual Mode) -->
+        <div id="tab-lab" class="tab-content animate-slide-in">
+            <div class="mb-5 border-b border-frost-200 pb-4 flex flex-col md:flex-row md:justify-between md:items-end gap-3">
+                <div>
+                    <h2 class="font-display text-2xl font-bold text-axon-900 flex items-center gap-2">
+                        <i class="ph-fill ph-waveform text-cobalt-600"></i> Oscilloscope &amp; Conduction Lab
+                    </h2>
+                    <p class="text-slate-500 text-sm mt-1" id="lab-subtitle">Tap a label from the bank, then tap the matching drop zone on the trace or diagram. (2 stages × 5 marks)</p>
+                </div>
+                <div class="flex items-center gap-3 flex-wrap">
+                    <button onclick="toggleLabMode()" id="lab-mode-toggle" class="bg-frost-200 hover:bg-frost-300 text-axon-900 font-bold text-xs px-3.5 py-2.5 rounded-xl transition-colors flex items-center gap-1.5">
+                        <i class="ph-bold ph-swap"></i> Switch to Process Sorter
+                    </button>
+                    <div class="font-bold text-axon-900 bg-white border border-frost-200 px-4 py-2 rounded-xl">
+                        Score: <span id="lab-score" class="text-cobalt-600 font-mono">0</span> / 10
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODE A: TAP-TO-PLACE SVG OSCILLOSCOPE & CONDUCTION DIAGRAMS (Default) -->
+            <div id="lab-mode-diagram">
+                <div class="flex gap-3 mb-5">
+                    <button onclick="showSvgSlide(0)" id="svg-tab-0" class="flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 border-cobalt-600 bg-cobalt-600 text-white shadow-sm transition-all">
+                        Graph 1: Action Potential Oscilloscope Trace (5 Marks)
+                    </button>
+                    <button onclick="showSvgSlide(1)" id="svg-tab-1" class="flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 border-frost-200 bg-white text-slate-700 hover:border-cobalt-500 transition-all">
+                        Diagram 2: Myelinated Axon &amp; Reflex Arc Pathway (5 Marks)
+                    </button>
+                </div>
+
+                <!-- SVG Slide 1: Action Potential Trace -->
+                <div id="svg-slide-0" class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-frost-200">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-display font-bold text-lg text-axon-900">Graph 1: Membrane Potential Changes During One Action Potential</h3>
+                        <button onclick="showSvgSlide(1)" class="bg-cobalt-600 hover:bg-cobalt-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition-colors flex items-center gap-1">
+                            Next Diagram <i class="ph-bold ph-arrow-right"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex flex-col lg:flex-row gap-6">
+                        <div class="flex-1 bg-axon-950 rounded-2xl border border-axon-700 relative h-96 overflow-hidden">
+                            <svg class="absolute inset-0 w-full h-full" viewBox="0 0 600 380" preserveAspectRatio="none">
+                                <!-- Oscilloscope Grid -->
+                                <line x1="65" y1="25" x2="65" y2="340" stroke="#94a3b8" stroke-width="2" />
+                                <line x1="65" y1="340" x2="575" y2="340" stroke="#94a3b8" stroke-width="2" />
+                                <!-- Reference Voltage Lines -->
+                                <line x1="65" y1="65" x2="575" y2="65" stroke="#334155" stroke-dasharray="4,4" stroke-width="1.2" />
+                                <line x1="65" y1="150" x2="575" y2="150" stroke="#475569" stroke-width="1.2" />
+                                <line x1="65" y1="230" x2="575" y2="230" stroke="#f59e0b" stroke-dasharray="6,4" stroke-width="1.5" />
+                                <line x1="65" y1="265" x2="575" y2="265" stroke="#3b82f6" stroke-dasharray="4,4" stroke-width="1.2" />
+                                <line x1="65" y1="305" x2="575" y2="305" stroke="#334155" stroke-dasharray="4,4" stroke-width="1.2" />
+                                <!-- Voltage Labels -->
+                                <text x="58" y="69" text-anchor="end" font-size="11" font-weight="700" fill="#a3e635">+40</text>
+                                <text x="58" y="154" text-anchor="end" font-size="11" font-weight="700" fill="#cbd5e1">0</text>
+                                <text x="58" y="234" text-anchor="end" font-size="11" font-weight="700" fill="#fbbf24">-55</text>
+                                <text x="58" y="269" text-anchor="end" font-size="11" font-weight="700" fill="#60a5fa">-70</text>
+                                <text x="58" y="309" text-anchor="end" font-size="11" font-weight="700" fill="#94a3b8">-85</text>
+                                <!-- Action Potential Trace (Neon Volt Green) -->
+                                <path d="M 65 265 L 155 265 Q 190 258 210 230 L 245 65 Q 258 48 272 75 L 335 288 Q 370 318 425 274 L 565 265" fill="none" stroke="#a3e635" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                                <!-- Key Node Dots -->
+                                <circle cx="115" cy="265" r="5" fill="#60a5fa" />
+                                <circle cx="210" cy="230" r="5" fill="#fbbf24" />
+                                <circle cx="255" cy="62" r="5" fill="#a3e635" />
+                                <circle cx="305" cy="185" r="5" fill="#38bdf8" />
+                                <circle cx="380" cy="304" r="5" fill="#f43f5e" />
+                                <!-- Axis Titles -->
+                                <text x="16" y="185" transform="rotate(-90 16 185)" text-anchor="middle" font-size="11" font-weight="700" fill="#e2e8f0">Membrane Potential (mV)</text>
+                                <text x="320" y="366" text-anchor="middle" font-size="11" font-weight="700" fill="#e2e8f0">Time (ms)</text>
+                            </svg>
+
+                            <!-- 5 Clickable Drop Zones -->
+                            <div class="drop-zone absolute bottom-[14%] left-[12%] w-28 bg-white/95 p-1.5 text-[10px] text-center font-bold text-axon-900 rounded-lg shadow" onclick="handleSvgZoneClick(1, this)">Zone 1 (−70 mV)</div>
+                            <div class="drop-zone absolute top-[48%] left-[14%] w-28 bg-white/95 p-1.5 text-[10px] text-center font-bold text-amber-800 rounded-lg shadow" onclick="handleSvgZoneClick(2, this)">Zone 2 (−55 mV)</div>
+                            <div class="drop-zone absolute top-[6%] left-[44%] w-32 bg-white/95 p-1.5 text-[10px] text-center font-bold text-volt-800 rounded-lg shadow" onclick="handleSvgZoneClick(3, this)">Zone 3 (Peak +40 mV)</div>
+                            <div class="drop-zone absolute top-[38%] right-[13%] w-32 bg-white/95 p-1.5 text-[10px] text-center font-bold text-cobalt-800 rounded-lg shadow" onclick="handleSvgZoneClick(4, this)">Zone 4 (Falling phase)</div>
+                            <div class="drop-zone absolute bottom-[10%] right-[12%] w-32 bg-white/95 p-1.5 text-[10px] text-center font-bold text-crimson-600 rounded-lg shadow" onclick="handleSvgZoneClick(5, this)">Zone 5 (Undershoot)</div>
+                        </div>
+
+                        <!-- Label Bank 1 -->
+                        <div class="w-full lg:w-1/3 flex flex-col gap-2.5" id="svg-bank-0">
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Graph 1 Label Bank:</p>
+                            <div class="tap-chip bg-axon-900 text-white p-3 rounded-xl shadow text-xs font-semibold border border-axon-700" data-id="3" onclick="handleSvgChipClick(3, this)">Depolarisation (voltage-gated Na⁺ channels open; Na⁺ influx)</div>
+                            <div class="tap-chip bg-axon-900 text-white p-3 rounded-xl shadow text-xs font-semibold border border-axon-700" data-id="1" onclick="handleSvgChipClick(1, this)">Resting potential (3 Na⁺ out / 2 K⁺ in pump + K⁺ leak)</div>
+                            <div class="tap-chip bg-axon-900 text-white p-3 rounded-xl shadow text-xs font-semibold border border-axon-700" data-id="5" onclick="handleSvgChipClick(5, this)">Hyperpolarisation (K⁺ channels slow to close; refractory period)</div>
+                            <div class="tap-chip bg-axon-900 text-white p-3 rounded-xl shadow text-xs font-semibold border border-axon-700" data-id="2" onclick="handleSvgChipClick(2, this)">Threshold potential (minimum depolarisation for all-or-nothing spike)</div>
+                            <div class="tap-chip bg-axon-900 text-white p-3 rounded-xl shadow text-xs font-semibold border border-axon-700" data-id="4" onclick="handleSvgChipClick(4, this)">Repolarisation (Na⁺ channels close; voltage-gated K⁺ channels open)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SVG Slide 2: Pacinian Corpuscle & Saltatory Conduction -->
+                <div id="svg-slide-1" class="hidden bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-frost-200">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-display font-bold text-lg text-axon-900">Diagram 2: Pacinian Corpuscle &amp; Myelinated Saltatory Conduction</h3>
+                        <button onclick="showSvgSlide(0)" class="bg-frost-200 hover:bg-frost-300 text-axon-900 px-4 py-2 rounded-xl text-xs font-bold transition-colors flex items-center gap-1">
+                            <i class="ph-bold ph-arrow-left"></i> Back
+                        </button>
+                    </div>
+
+                    <div class="flex flex-col lg:flex-row gap-6">
+                        <div class="flex-1 bg-frost-50 rounded-2xl border border-frost-200 relative h-96 overflow-hidden">
+                            <svg class="absolute inset-0 w-full h-full" viewBox="0 0 600 380" preserveAspectRatio="none">
+                                <!-- Pacinian Corpuscle (Left concentric lamellae) -->
+                                <ellipse cx="95" cy="195" rx="75" ry="95" fill="#dbeafe" stroke="#2563eb" stroke-width="2.5" />
+                                <ellipse cx="95" cy="195" rx="56" ry="72" fill="#eff6ff" stroke="#3b82f6" stroke-width="2" />
+                                <ellipse cx="95" cy="195" rx="37" ry="48" fill="#dbeafe" stroke="#2563eb" stroke-width="2" />
+                                <!-- Sensory Neurone Ending inside capsule -->
+                                <line x1="78" y1="195" x2="555" y2="195" stroke="#0f172a" stroke-width="10" stroke-linecap="round" />
+                                <line x1="78" y1="195" x2="555" y2="195" stroke="#a3e635" stroke-width="4" stroke-linecap="round" />
+                                <!-- Myelin Sheaths (Schwann Cells) -->
+                                <rect x="195" y="168" width="90" height="54" rx="18" fill="#fef08a" stroke="#ca8a04" stroke-width="2.5" />
+                                <rect x="315" y="168" width="90" height="54" rx="18" fill="#fef08a" stroke="#ca8a04" stroke-width="2.5" />
+                                <rect x="435" y="168" width="90" height="54" rx="18" fill="#fef08a" stroke="#ca8a04" stroke-width="2.5" />
+                                <!-- Saltatory Jumping Arcs (Local Currents) -->
+                                <path d="M 182 162 Q 240 105 298 162" fill="none" stroke="#2563eb" stroke-width="3" stroke-dasharray="6,4" />
+                                <path d="M 302 162 Q 360 105 418 162" fill="none" stroke="#2563eb" stroke-width="3" stroke-dasharray="6,4" />
+                                <path d="M 422 162 Q 480 105 538 162" fill="none" stroke="#2563eb" stroke-width="3" stroke-dasharray="6,4" />
+                                <!-- Labels -->
+                                <text x="95" y="315" text-anchor="middle" font-size="11" font-weight="800" fill="#1e40af">MECHANICAL PRESSURE</text>
+                                <text x="370" y="340" text-anchor="middle" font-size="11" font-weight="800" fill="#3f6212">DIRECTION OF IMPULSE →</text>
+                            </svg>
+
+                            <!-- 5 Clickable Drop Zones -->
+                            <div class="drop-zone absolute top-[6%] left-[3%] w-32 bg-white/95 p-1.5 text-[10px] text-center font-bold text-cobalt-800 rounded-lg shadow" onclick="handleSvgZoneClick(6, this)">Zone 6 (Capsule rings)</div>
+                            <div class="drop-zone absolute bottom-[18%] left-[4%] w-32 bg-white/95 p-1.5 text-[10px] text-center font-bold text-axon-900 rounded-lg shadow" onclick="handleSvgZoneClick(7, this)">Zone 7 (Central tip)</div>
+                            <div class="drop-zone absolute top-[14%] left-[44%] w-32 bg-white/95 p-1.5 text-[10px] text-center font-bold text-cobalt-700 rounded-lg shadow" onclick="handleSvgZoneClick(8, this)">Zone 8 (Jumping arcs)</div>
+                            <div class="drop-zone absolute bottom-[24%] left-[36%] w-28 bg-white/95 p-1.5 text-[10px] text-center font-bold text-amber-800 rounded-lg shadow" onclick="handleSvgZoneClick(9, this)">Zone 9 (Yellow wrap)</div>
+                            <div class="drop-zone absolute bottom-[24%] right-[14%] w-28 bg-white/95 p-1.5 text-[10px] text-center font-bold text-volt-800 rounded-lg shadow" onclick="handleSvgZoneClick(10, this)">Zone 10 (Uninsulated gap)</div>
+                        </div>
+
+                        <!-- Label Bank 2 -->
+                        <div class="w-full lg:w-1/3 flex flex-col gap-2.5" id="svg-bank-1">
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Diagram 2 Label Bank:</p>
+                            <div class="tap-chip bg-axon-900 text-white p-3 rounded-xl shadow text-xs font-semibold border border-axon-700" data-id="9" onclick="handleSvgChipClick(9, this)">Myelin sheath (Schwann cells acting as electrical insulator)</div>
+                            <div class="tap-chip bg-axon-900 text-white p-3 rounded-xl shadow text-xs font-semibold border border-axon-700" data-id="6" onclick="handleSvgChipClick(6, this)">Concentric lamellae (deform under pressure to stretch neurone)</div>
+                            <div class="tap-chip bg-axon-900 text-white p-3 rounded-xl shadow text-xs font-semibold border border-axon-700" data-id="10" onclick="handleSvgChipClick(10, this)">Node of Ranvier (exposed axon rich in voltage-gated Na⁺ channels)</div>
+                            <div class="tap-chip bg-axon-900 text-white p-3 rounded-xl shadow text-xs font-semibold border border-axon-700" data-id="7" onclick="handleSvgChipClick(7, this)">Stretch-mediated Na⁺ channels (create generator potential)</div>
+                            <div class="tap-chip bg-axon-900 text-white p-3 rounded-xl shadow text-xs font-semibold border border-axon-700" data-id="8" onclick="handleSvgChipClick(8, this)">Saltatory conduction (local currents jump node to node)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODE B: FALLBACK PROCESS SORTER (10 Marks: 2 x 5 Steps) -->
+            <div id="lab-mode-sorter" class="hidden">
+                <div class="flex gap-3 mb-5">
+                    <button onclick="showSorterStage(0)" id="sort-tab-0" class="flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 border-cobalt-600 bg-cobalt-600 text-white shadow-sm transition-all">
+                        Stage 1: Action Potential Mechanism (5 Marks)
+                    </button>
+                    <button onclick="showSorterStage(1)" id="sort-tab-1" class="flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 border-frost-200 bg-white text-slate-700 hover:border-cobalt-500 transition-all">
+                        Stage 2: Pacinian Transduction &amp; Reflex Arc (5 Marks)
+                    </button>
+                </div>
+
+                <div id="sorter-stage-0" class="bg-white p-6 rounded-2xl shadow-sm border border-frost-200">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-display font-bold text-lg text-axon-900">Stage 1: Sequence of Ion Channel Events in an Action Potential</h3>
+                        <span id="sorter-badge-0" class="text-xs font-bold bg-frost-100 text-slate-700 px-3 py-1 rounded-lg">0 / 5 Locked</span>
+                    </div>
+                    <div id="sorter-list-0" class="space-y-3 mb-5"></div>
+                    <div id="sorter-fb-0" class="hidden mb-4 p-3 rounded-xl text-sm font-semibold"></div>
+                    <div class="flex gap-3">
+                        <button onclick="checkSorterOrder(0)" id="sorter-check-0" class="bg-cobalt-600 hover:bg-cobalt-700 text-white font-bold py-3 px-6 rounded-xl shadow text-sm">Check Stage 1 Order</button>
+                        <button onclick="showSorterStage(1)" class="bg-frost-100 hover:bg-frost-200 text-axon-900 font-bold py-3 px-5 rounded-xl text-sm ml-auto">Next Stage <i class="ph-bold ph-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <div id="sorter-stage-1" class="hidden bg-white p-6 rounded-2xl shadow-sm border border-frost-200">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-display font-bold text-lg text-axon-900">Stage 2: Transduction in a Pacinian Corpuscle to Reflex Response</h3>
+                        <span id="sorter-badge-1" class="text-xs font-bold bg-frost-100 text-slate-700 px-3 py-1 rounded-lg">0 / 5 Locked</span>
+                    </div>
+                    <div id="sorter-list-1" class="space-y-3 mb-5"></div>
+                    <div id="sorter-fb-1" class="hidden mb-4 p-3 rounded-xl text-sm font-semibold"></div>
+                    <div class="flex gap-3">
+                        <button onclick="checkSorterOrder(1)" id="sorter-check-1" class="bg-volt-600 hover:bg-volt-700 text-white font-bold py-3 px-6 rounded-xl shadow text-sm">Check Stage 2 Order</button>
+                        <button onclick="showSorterStage(0)" class="bg-frost-100 hover:bg-frost-200 text-axon-900 font-bold py-3 px-5 rounded-xl text-sm ml-auto"><i class="ph-bold ph-arrow-left"></i> Back</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: EXAM PREP & SKILLS -->
+        <div id="tab-resources" class="tab-content animate-slide-in">
+            <div class="mb-6 border-b border-frost-200 pb-4">
+                <h2 class="font-display text-2xl font-bold text-axon-900 flex items-center gap-2">
+                    <i class="ph-fill ph-book-open-text text-cobalt-600"></i> Exam Prep &amp; Electrophysiology Skills
+                </h2>
+                <p id="resources-intro" class="text-slate-500 text-sm mt-1">Complete your reflection action plan to unlock external revision links, receptor tables, and oscilloscope calculation guides (up to +6 bonus marks).</p>
+            </div>
+
+            <!-- Action Plan Gate -->
+            <div id="action-plan-section" class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-frost-200 mb-6">
+                <h3 class="font-display text-xl font-bold text-axon-900 mb-2">Identify how you will improve your score:</h3>
+                <p class="text-sm text-slate-500 mb-6">Select at least two meaningful next steps (+3 bonus marks per valid action, capped at +6 marks so your total is out of 100).</p>
+
+                <div class="space-y-4 mb-6">
+                    <label class="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-frost-50">
+                        <input type="checkbox" id="chk-pastPapers" onchange="toggleAction('pastPapers')" class="w-5 h-5 accent-cobalt-600 rounded">
+                        <span class="font-medium text-slate-800">Complete OCR A Module 5.1.3 Neuronal Communication past paper questions</span>
+                    </label>
+
+                    <label class="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-frost-50">
+                        <input type="checkbox" id="chk-rewatchPAGs" onchange="toggleAction('rewatchPAGs')" class="w-5 h-5 accent-cobalt-600 rounded">
+                        <span class="font-medium text-slate-800">Practice oscilloscope impulse speed calculations and reflex arc diagrams</span>
+                    </label>
+
+                    <div class="p-2 rounded-lg hover:bg-frost-50">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="chk-flashcards" onchange="toggleAction('flashcards')" class="w-5 h-5 accent-cobalt-600 rounded">
+                            <span class="font-medium text-slate-800">Create flashcards based on a weak 6-mark question</span>
+                        </label>
+                        <div id="input-flashcards" class="hidden ml-8 mt-2">
+                            <input type="text" id="val-flashcards" placeholder="Which 6-mark topic was weakest?" class="w-full sm:w-2/3 p-2.5 border border-frost-300 rounded-lg outline-none focus:border-cobalt-600 text-sm">
+                        </div>
+                    </div>
+
+                    <div class="p-2 rounded-lg hover:bg-frost-50">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="chk-glossary" onchange="toggleAction('glossary')" class="w-5 h-5 accent-cobalt-600 rounded">
+                            <span class="font-medium text-slate-800">Write a glossary of key neurone &amp; action potential terms</span>
+                        </label>
+                        <div id="input-glossary" class="hidden ml-8 mt-2">
+                            <input type="text" id="val-glossary" placeholder="Name 3 words you struggled with (e.g., transducer, saltatory, refractory)..." class="w-full sm:w-2/3 p-2.5 border border-frost-300 rounded-lg outline-none focus:border-cobalt-600 text-sm">
+                        </div>
+                    </div>
+
+                    <div class="p-2 rounded-lg hover:bg-frost-50">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="chk-copyWork" onchange="toggleAction('copyWork')" class="w-5 h-5 accent-cobalt-600 rounded">
+                            <span class="font-medium text-slate-800">Copy up missed class notes</span>
+                        </label>
+                        <div id="input-copyWork" class="hidden ml-8 mt-2 flex flex-col sm:flex-row gap-2">
+                            <input type="text" id="val-copyWho" placeholder="Who will you copy from?" class="w-full sm:w-1/3 p-2.5 border border-frost-300 rounded-lg outline-none focus:border-cobalt-600 text-sm">
+                            <input type="date" id="val-copyDate" class="w-full sm:w-1/3 p-2.5 border border-frost-300 rounded-lg outline-none focus:border-cobalt-600 text-sm text-slate-600">
+                        </div>
+                    </div>
+
+                    <div class="p-2 rounded-lg hover:bg-frost-50">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="chk-seeTeacher" onchange="toggleAction('seeTeacher')" class="w-5 h-5 accent-cobalt-600 rounded">
+                            <span class="font-medium text-slate-800">Approach my teacher independently for help</span>
+                        </label>
+                        <div id="input-seeTeacher" class="hidden ml-8 mt-2">
+                            <input type="date" id="val-seeTeacher" class="w-full sm:w-1/3 p-2.5 border border-frost-300 rounded-lg outline-none focus:border-cobalt-600 text-sm text-slate-600">
+                        </div>
+                    </div>
+
+                    <label class="flex items-center gap-3 cursor-pointer mt-4 pt-4 border-t border-frost-200 p-2">
+                        <input type="checkbox" id="chk-none" onchange="toggleAction('none')" class="w-5 h-5 accent-crimson-600 rounded">
+                        <span class="font-bold text-slate-500">None of the above</span>
+                    </label>
+                </div>
+
+                <button onclick="submitActionPlan()" class="bg-cobalt-600 hover:bg-cobalt-700 text-white font-bold py-3.5 px-7 rounded-xl shadow-md transition-colors flex items-center justify-center gap-2 w-full sm:w-auto">
+                    Submit Action Plan &amp; Unlock Resources <i class="ph-bold ph-lock-open"></i>
+                </button>
+            </div>
+
+            <!-- Unlocked Resource Grid -->
+            <div id="resources-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+                <!-- PMT Module 5 -->
+                <a href="https://www.physicsandmathstutor.com/biology-revision/a-level-ocr-a/module-5/" target="_blank" rel="noopener noreferrer" class="bg-white p-6 rounded-2xl border-2 border-frost-200 hover:border-cobalt-600 transition-colors group shadow-sm flex flex-col items-center text-center">
+                    <div class="bg-cobalt-50 p-4 rounded-full mb-4 text-cobalt-600 group-hover:scale-110 transition-transform"><i class="ph-fill ph-exam text-4xl"></i></div>
+                    <h3 class="font-display font-bold text-xl mb-2 text-axon-900">Physics &amp; Maths Tutor</h3>
+                    <p class="text-sm text-slate-500 mb-4">Official OCR A Module 5.1.3 Neuronal Communication past papers and mark schemes.</p>
+                    <span class="text-cobalt-700 font-bold text-sm uppercase tracking-wider flex items-center gap-1 mt-auto">Open Resource <i class="ph-bold ph-arrow-up-right"></i></span>
+                </a>
+
+                <!-- Bozeman Science: The Nervous System -->
+                <a href="https://www.youtube.com/watch?v=UabDiuTtU0M" target="_blank" rel="noopener noreferrer" class="bg-white p-6 rounded-2xl border-2 border-frost-200 hover:border-crimson-600 transition-colors group shadow-sm flex flex-col items-center text-center">
+                    <div class="bg-red-50 p-4 rounded-full mb-4 text-crimson-600 group-hover:scale-110 transition-transform"><i class="ph-fill ph-youtube-logo text-4xl"></i></div>
+                    <h3 class="font-display font-bold text-xl mb-2 text-axon-900">Bozeman Science</h3>
+                    <p class="text-sm text-slate-500 mb-4">Clear visual walkthrough of resting potential, action potentials, and myelinated conduction.</p>
+                    <span class="text-crimson-600 font-bold text-sm uppercase tracking-wider flex items-center gap-1 mt-auto">Watch Video <i class="ph-bold ph-arrow-up-right"></i></span>
+                </a>
+
+                <!-- Freesciencelessons -->
+                <a href="https://www.youtube.com/results?search_query=freesciencelessons+a+level+biology+resting+potential+action+potential+saltatory+conduction" target="_blank" rel="noopener noreferrer" class="bg-white p-6 rounded-2xl border-2 border-frost-200 hover:border-volt-600 transition-colors group shadow-sm flex flex-col items-center text-center">
+                    <div class="bg-volt-50 p-4 rounded-full mb-4 text-volt-700 group-hover:scale-110 transition-transform"><i class="ph-fill ph-video text-4xl"></i></div>
+                    <h3 class="font-display font-bold text-xl mb-2 text-axon-900">FSL: Neuronal Communication</h3>
+                    <p class="text-sm text-slate-500 mb-4">Concise A-Level revision videos on Pacinian corpuscles, ion channels, and saltatory conduction.</p>
+                    <span class="text-volt-700 font-bold text-sm uppercase tracking-wider flex items-center gap-1 mt-auto">Watch Videos <i class="ph-bold ph-arrow-up-right"></i></span>
+                </a>
+
+                <!-- Receptor Types Modal Trigger -->
+                <div class="bg-white p-6 rounded-2xl border-2 border-frost-200 hover:border-cobalt-600 transition-colors group shadow-sm flex flex-col items-center text-center">
+                    <div class="bg-cobalt-50 p-4 rounded-full mb-4 text-cobalt-700 group-hover:scale-110 transition-transform"><i class="ph-fill ph-eye text-4xl"></i></div>
+                    <h3 class="font-display font-bold text-xl mb-2 text-axon-900">Quick Reference:<br>Receptors &amp; Transducers</h3>
+                    <p class="text-sm text-slate-500 mb-4">Compare mechanoreceptors, chemoreceptors, thermoreceptors, and photoreceptors.</p>
+                    <button onclick="openModal('modal-receptors')" class="mt-auto text-white bg-cobalt-600 hover:bg-cobalt-700 py-2.5 rounded-xl font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-1.5 w-full transition-colors">
+                        <i class="ph-bold ph-book-open"></i> Read Receptor Guide
+                    </button>
+                </div>
+
+                <!-- Neurones & Reflex Arc Modal Trigger -->
+                <div class="bg-white p-6 rounded-2xl border-2 border-frost-200 hover:border-volt-600 transition-colors group shadow-sm flex flex-col items-center text-center">
+                    <div class="bg-volt-50 p-4 rounded-full mb-4 text-volt-700 group-hover:scale-110 transition-transform"><i class="ph-fill ph-share-network text-4xl"></i></div>
+                    <h3 class="font-display font-bold text-xl mb-2 text-axon-900">Quick Reference:<br>Neurones &amp; Reflex Arcs</h3>
+                    <p class="text-sm text-slate-500 mb-4">Structural comparison of sensory, relay, and motor neurones plus knee-jerk vs blinking reflexes.</p>
+                    <button onclick="openModal('modal-reflex')" class="mt-auto text-white bg-volt-600 hover:bg-volt-700 py-2.5 rounded-xl font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-1.5 w-full transition-colors">
+                        <i class="ph-bold ph-book-open"></i> Read Reflex Guide
+                    </button>
+                </div>
+
+                <!-- Conduction Speed Maths Modal Trigger -->
+                <div class="bg-white p-6 rounded-2xl border-2 border-frost-200 hover:border-axon-900 transition-colors group shadow-sm flex flex-col items-center text-center">
+                    <div class="bg-frost-100 p-4 rounded-full mb-4 text-axon-900 group-hover:scale-110 transition-transform"><i class="ph-fill ph-calculator text-4xl"></i></div>
+                    <h3 class="font-display font-bold text-xl mb-2 text-axon-900">Maths Reminder:<br>Conduction &amp; Frequency</h3>
+                    <p class="text-sm text-slate-500 mb-4">Calculating impulse velocity (m s⁻¹), spike frequency (Hz), and factors affecting speed.</p>
+                    <button onclick="openModal('modal-maths')" class="mt-auto text-white bg-axon-900 hover:bg-axon-800 py-2.5 rounded-xl font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-1.5 w-full transition-colors">
+                        <i class="ph-bold ph-book-open"></i> Read Maths Guide
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 6: DASHBOARD & REPORT GENERATOR -->
+        <div id="tab-dash" class="tab-content animate-slide-in">
+            <div class="max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded-3xl shadow-xl border border-frost-200 relative overflow-hidden">
+                <i class="ph-duotone ph-lightning text-[15rem] absolute -top-10 -right-10 text-frost-100 pointer-events-none"></i>
+
+                <h2 class="font-display text-3xl font-bold text-axon-900 mb-2 relative z-10">Revision Dashboard</h2>
+                <p class="text-sm text-slate-500 mb-8 border-b border-frost-200 pb-4 relative z-10">Core sections total 94 marks. Completing 2 reflection actions in Exam Prep adds +6 bonus marks for a total out of 100.</p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 relative z-10">
+                    <div class="bg-frost-50 p-5 rounded-2xl border border-frost-200">
+                        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2 mb-2">
+                            <i class="ph-fill ph-arrows-merge text-cobalt-600 text-lg"></i> Mix &amp; Match
+                        </div>
+                        <div class="text-3xl font-black text-axon-900 font-mono"><span id="dash-match">0</span> <span class="text-lg text-slate-400 font-medium">/ 18</span></div>
+                    </div>
+                    <div class="bg-frost-50 p-5 rounded-2xl border border-frost-200">
+                        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2 mb-2">
+                            <i class="ph-fill ph-list-checks text-volt-600 text-lg"></i> Knowledge Quiz
+                        </div>
+                        <div class="text-3xl font-black text-axon-900 font-mono"><span id="dash-quiz">0</span> <span class="text-lg text-slate-400 font-medium">/ 30</span></div>
+                    </div>
+                    <div class="bg-frost-50 p-5 rounded-2xl border border-frost-200">
+                        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2 mb-2">
+                            <i class="ph-fill ph-pen-nib text-cobalt-700 text-lg"></i> 6-Mark Questions
+                        </div>
+                        <div class="text-3xl font-black text-axon-900 font-mono"><span id="dash-long">0</span> <span class="text-lg text-slate-400 font-medium">/ 36</span></div>
+                    </div>
+                    <div class="bg-frost-50 p-5 rounded-2xl border border-frost-200">
+                        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2 mb-2">
+                            <i class="ph-fill ph-waveform text-volt-700 text-lg"></i> Oscilloscope Lab
+                        </div>
+                        <div class="text-3xl font-black text-axon-900 font-mono"><span id="dash-lab">0</span> <span class="text-lg text-slate-400 font-medium">/ 10</span></div>
+                    </div>
+                </div>
+
+                <div class="bg-volt-50 border border-volt-200 rounded-2xl p-4 mb-8 flex items-center justify-between relative z-10">
+                    <div class="flex items-center gap-2 text-sm font-bold text-volt-800">
+                        <i class="ph-fill ph-sparkle text-cobalt-600 text-xl"></i> Reflection Action Plan Bonus
+                    </div>
+                    <div class="text-xl font-black text-volt-700 font-mono">+<span id="dash-bonus">0</span> <span class="text-sm font-semibold text-volt-600">/ 6</span></div>
+                </div>
+
+                <button onclick="openModal('name-modal')" class="w-full bg-gradient-to-r from-cobalt-600 to-volt-600 hover:from-cobalt-700 hover:to-volt-700 text-white font-bold uppercase tracking-widest py-4 rounded-xl shadow-lg transition-transform transform hover:-translate-y-0.5 text-base sm:text-lg flex justify-center items-center gap-3 relative z-10">
+                    <i class="ph-bold ph-printer text-2xl"></i> Generate Mark Report
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- NAME VERIFICATION MODAL -->
+    <div id="name-modal" class="fixed inset-0 bg-axon-950/80 z-[60] hidden items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white p-8 rounded-2xl max-w-sm w-full shadow-2xl relative border-t-8 border-cobalt-600 animate-slide-in text-center">
+            <i class="ph-fill ph-student text-5xl text-axon-900 mb-2"></i>
+            <h2 class="font-display text-2xl font-bold text-axon-900 mb-2">Student Verification</h2>
+            <p class="text-slate-500 font-medium mb-5 text-sm">Enter your full name for the official screenshot report.</p>
+            <input type="text" id="student-name-input" class="w-full p-3 border-2 rounded-xl outline-none transition-colors border-frost-200 focus:border-cobalt-600 mb-2 bg-frost-50 text-center font-bold text-lg text-axon-900" placeholder="Your Name">
+            <p id="name-error" class="text-xs font-bold text-crimson-600 mb-4 hidden">Please enter your name before generating the report.</p>
+            <button onclick="generateScorecard()" class="w-full py-3 bg-cobalt-600 hover:bg-cobalt-700 text-white rounded-xl transition-colors font-bold shadow-md mt-2">Generate Report</button>
+            <button onclick="closeModals()" class="mt-3 text-sm text-slate-400 hover:text-slate-600 font-medium">Cancel</button>
+        </div>
+    </div>
+
+    <!-- SCORECARD REPORT MODAL -->
+    <div id="scorecard-modal" class="fixed inset-0 bg-axon-950/90 z-[60] hidden items-center justify-center p-4 backdrop-blur-md">
+        <div class="bg-white p-6 sm:p-8 rounded-3xl max-w-md w-full shadow-[0_0_50px_rgba(37,99,235,0.3)] relative border-4 border-cobalt-500 max-h-[95vh] overflow-y-auto animate-slide-in">
+            <button onclick="closeModals()" class="absolute top-4 right-4 text-slate-400 hover:text-crimson-600 transition-colors">
+                <i class="ph-fill ph-x-circle text-3xl"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="animate-spike-flash inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-volt-50 text-volt-600 mb-2 border border-volt-200">
+                    <i class="ph-fill ph-lightning text-4xl"></i>
+                </div>
+                <h2 class="font-display text-3xl font-extrabold text-axon-900 leading-tight">Neuronal Communication</h2>
+                <p class="text-cobalt-700 font-bold mt-1 uppercase tracking-widest text-xs">OCR A A-Level Biology • Mark Report</p>
+            </div>
+
+            <div class="bg-frost-50 p-5 rounded-2xl border border-frost-200 mb-5">
+                <div class="flex justify-between items-center border-b border-frost-200 pb-3 mb-3">
+                    <span class="text-slate-500 font-bold uppercase tracking-wider text-xs">Student</span>
+                    <span class="font-bold text-axon-900 text-base" id="sc-name"></span>
+                </div>
+
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-slate-600 font-medium">Mix &amp; Match</span>
+                        <span class="font-bold text-axon-900 font-mono"><span id="sc-match">0</span> <span class="text-slate-400">/ 18</span></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-600 font-medium">Knowledge Quiz</span>
+                        <span class="font-bold text-axon-900 font-mono"><span id="sc-quiz">0</span> <span class="text-slate-400">/ 30</span></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-600 font-medium">Oscilloscope Lab</span>
+                        <span class="font-bold text-axon-900 font-mono"><span id="sc-lab">0</span> <span class="text-slate-400">/ 10</span></span>
+                    </div>
+                    <div class="flex justify-between border-b border-frost-200 pb-3">
+                        <span class="text-slate-600 font-medium">6-Mark Questions</span>
+                        <span class="font-bold text-axon-900 font-mono"><span id="sc-long">0</span> <span class="text-slate-400">/ 36</span></span>
+                    </div>
+                </div>
+
+                <!-- Action Plan Breakdown -->
+                <div class="pt-3 border-b border-frost-200 pb-3">
+                    <div class="flex justify-between items-center text-sm mb-2">
+                        <span class="text-volt-800 font-bold">What to Do Next:</span>
+                        <span class="font-bold text-volt-700 bg-volt-50 px-2.5 py-0.5 rounded-md text-xs border border-volt-200">+<span id="sc-bonus">0</span> / 6 Bonus</span>
+                    </div>
+                    <div id="sc-action-list" class="text-xs text-slate-600 space-y-1 bg-white p-2.5 rounded-xl border border-frost-200 max-h-28 overflow-y-auto"></div>
+                </div>
+
+                <div class="flex justify-between pt-4 items-center">
+                    <span class="font-display font-bold text-axon-900 uppercase text-base">Total Score:</span>
+                    <div class="text-right">
+                        <div class="font-black text-cobalt-600 text-3xl leading-none font-mono"><span id="sc-total">0</span> <span class="text-lg text-slate-400">/ 100</span></div>
+                        <div class="text-xs font-bold text-volt-700 uppercase tracking-wider mt-1"><span id="sc-percent">0</span>% Mastery</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center text-xs text-slate-500 font-medium">
+                <p class="font-bold text-axon-900 mb-1">Screenshot this report for Mr Reeve.</p>
+                <p id="sc-timestamp"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 1: RECEPTORS & TRANSDUCERS -->
+    <div id="modal-receptors" class="fixed inset-0 bg-axon-950/80 z-[60] hidden items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white p-6 rounded-2xl max-w-2xl w-full shadow-2xl relative border-t-8 border-cobalt-600 max-h-[90vh] overflow-y-auto animate-slide-in">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-display text-2xl font-bold text-axon-900 flex items-center gap-2"><i class="ph-fill ph-eye text-cobalt-600"></i> Types of Sensory Receptor &amp; Transduction</h2>
+                <button onclick="closeModals()" class="text-slate-400 hover:text-crimson-600"><i class="ph-bold ph-x text-2xl"></i></button>
+            </div>
+            <div class="text-sm text-slate-800 bg-frost-50 p-5 rounded-xl border border-frost-200 space-y-3">
+                <p><strong class="text-cobalt-700">Biological Transducer:</strong> Every sensory receptor is specific to one type of stimulus and converts its energy (mechanical, chemical, light, thermal) into electrical energy (a <strong>generator potential</strong>).</p>
+                <ul class="list-disc pl-5 space-y-1.5">
+                    <li><strong>Mechanoreceptors (e.g., Pacinian corpuscle in skin / baroreceptors in arteries):</strong> Detect mechanical pressure or stretch. Deformation opens <em>stretch-mediated Na⁺ channels</em>.</li>
+                    <li><strong>Chemoreceptors (e.g., olfactory cells in nose, taste buds, carotid/aortic bodies):</strong> Detect specific chemical molecules or blood pH/CO₂ levels.</li>
+                    <li><strong>Thermoreceptors (e.g., hypothalamus &amp; skin endings):</strong> Detect changes in internal blood temperature or external ambient temperature.</li>
+                    <li><strong>Photoreceptors (e.g., rods and cones in the retina):</strong> Detect light intensity and wavelength (rods: low light, rhodopsin, monochrome; cones: bright light, iodopsin, colour, high acuity).</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: NEURONES & REFLEX ARCS -->
+    <div id="modal-reflex" class="fixed inset-0 bg-axon-950/80 z-[60] hidden items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white p-6 rounded-2xl max-w-2xl w-full shadow-2xl relative border-t-8 border-volt-600 max-h-[90vh] overflow-y-auto animate-slide-in">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-display text-2xl font-bold text-axon-900 flex items-center gap-2"><i class="ph-fill ph-share-network text-volt-700"></i> Neurone Types &amp; Reflex Arcs</h2>
+                <button onclick="closeModals()" class="text-slate-400 hover:text-crimson-600"><i class="ph-bold ph-x text-2xl"></i></button>
+            </div>
+            <div class="text-sm text-slate-800 bg-frost-50 p-5 rounded-xl border border-frost-200 space-y-3">
+                <p><strong class="text-volt-800">Sensory Neurone:</strong> Carries impulses from receptor → CNS. Has a <strong>long dendron</strong>, cell body positioned off to the side in the dorsal root ganglion, and a shorter axon; usually myelinated.</p>
+                <p><strong class="text-volt-800">Relay (Intermediate) Neurone:</strong> Lies entirely within the CNS (brain/spinal cord) linking sensory to motor neurones. Has many short dendrites and a short axon; usually <strong>unmyelinated</strong>.</p>
+                <p><strong class="text-volt-800">Motor Neurone:</strong> Carries impulses from CNS → effector (muscle/gland). Has a large cell body at one end inside the CNS with short dendrites and a <strong>long myelinated axon</strong> ending in motor end plates.</p>
+                <p><strong class="text-volt-800">Reflex Arc Pathway:</strong> Stimulus → Receptor → Sensory neurone → (Relay neurone in CNS) → Motor neurone → Effector → Rapid involuntary response. Note: the <strong>knee-jerk reflex</strong> is monosynaptic (no relay neurone, only 1 synapse) for ultra-fast posture adjustment, whereas the <strong>corneal/blinking reflex</strong> uses a relay neurone in the pons.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: CONDUCTION SPEED & FREQUENCY MATHS -->
+    <div id="modal-maths" class="fixed inset-0 bg-axon-950/80 z-[60] hidden items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white p-6 rounded-2xl max-w-2xl w-full shadow-2xl relative border-t-8 border-axon-900 max-h-[90vh] overflow-y-auto animate-slide-in">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-display text-2xl font-bold text-axon-900 flex items-center gap-2"><i class="ph-fill ph-calculator text-axon-900"></i> Conduction Speed &amp; Spike Frequency Maths</h2>
+                <button onclick="closeModals()" class="text-slate-400 hover:text-crimson-600"><i class="ph-bold ph-x text-2xl"></i></button>
+            </div>
+            <div class="text-sm text-slate-800 bg-frost-50 p-5 rounded-xl border border-frost-200 space-y-3">
+                <div class="bg-white p-3 rounded-xl border border-frost-300 font-mono text-center text-sm sm:text-base font-bold text-axon-900">
+                    Conduction Speed (m s⁻¹) = Distance (m) &divide; Time (s) &nbsp;|&nbsp; Frequency (Hz) = 1 &divide; Period (s)
+                </div>
+                <p><strong class="text-axon-900">Unit Trap:</strong> Oscilloscope traces almost always show time in <strong>milliseconds (ms)</strong>! Divide ms by 1,000 to convert to seconds (e.g., 4 ms = 0.004 s). If an impulse travels 0.36 m in 4 ms, speed = 0.36 &divide; 0.004 = <strong>90 m s⁻¹</strong>.</p>
+                <p><strong class="text-axon-900">Three Factors Increasing Conduction Speed:</strong> (1) <strong>Myelination</strong> (saltatory conduction jumps node to node, up to 120 m s⁻¹ vs ~2 m s⁻¹ unmyelinated), (2) <strong>Wider axon diameter</strong> (less cytoplasmic resistance to ion flow/local currents), (3) <strong>Higher temperature</strong> (faster ion diffusion and ATP production for Na⁺/K⁺ pumps, up to enzyme denaturation point).</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- APP LOGIC -->
+    <script>
+        // =========================================================================
+        // OCR A-LEVEL BIOLOGY MODULE 5.1.3 DATA BANK
+        // =========================================================================
+        const DATA = {
+            // 18 Exact OCR A Key Terms & Definitions (3 rounds of 6)
+            match: [
+                { q: "Sensory neurone", a: "Neurone with a long dendron and side cell body that transmits impulses from a receptor to the CNS." },
+                { q: "Relay neurone", a: "Short, usually unmyelinated neurone within the CNS that connects sensory neurones to motor neurones." },
+                { q: "Motor neurone", a: "Neurone with a terminal cell body in the CNS and a long axon carrying impulses to an effector." },
+                { q: "Reflex arc", a: "Rapid, involuntary neural pathway from receptor to effector that bypasses conscious brain processing." },
+                { q: "Biological transducer", a: "A sensory receptor that converts one form of stimulus energy (e.g., pressure) into electrical impulses." },
+                { q: "Pacinian corpuscle", a: "A skin mechanoreceptor with concentric lamellae and stretch-mediated Na⁺ channels detecting pressure." },
+                { q: "Generator potential", a: "Local depolarisation in a sensory receptor caused by opening ion channels in response to a stimulus." },
+                { q: "Resting potential", a: "Potential difference across an unstimulated neurone membrane (~ −70 mV), maintained by Na⁺/K⁺ pumps." },
+                { q: "Sodium-potassium pump", a: "Active transport carrier protein pumping 3 Na⁺ ions out for every 2 K⁺ ions pumped into the axon." },
+                { q: "Threshold potential", a: "Critical membrane potential (~ −55 mV) that must be reached to trigger voltage-gated Na⁺ channels." },
+                { q: "Depolarisation", a: "Rapid reversal of membrane potential toward +40 mV as voltage-gated Na⁺ channels open and Na⁺ rushes in." },
+                { q: "Repolarisation", a: "Return of membrane potential toward negative values as Na⁺ channels close and K⁺ channels open." },
+                { q: "Hyperpolarisation", a: "Temporary overshoot below −70 mV because voltage-gated K⁺ channels are slow to close after repolarisation." },
+                { q: "Refractory period", a: "Brief recovery phase after an action potential when a membrane section cannot be re-excited." },
+                { q: "All-or-nothing principle", a: "Any stimulus reaching threshold triggers a full-sized action potential of constant amplitude (+40 mV)." },
+                { q: "Schwann cell (myelin sheath)", a: "Glial cell wrapped tightly around an axon, forming a lipid-rich electrical insulating layer." },
+                { q: "Node of Ranvier", a: "Short uninsulated gap between adjacent Schwann cells where voltage-gated Na⁺ channels are concentrated." },
+                { q: "Saltatory conduction", a: "Rapid propagation of action potentials jumping from node of Ranvier to node via local circuits." }
+            ],
+
+            // 30 High-Challenge OCR A MCQs — ALL 4 OPTIONS STRICTLY BALANCED IN LENGTH
+            quiz: [
+                {
+                    q: "Which structural feature distinguishes a sensory neurone from a motor neurone?",
+                    options: [
+                        "Long dendron carrying impulses to a side-branched cell body",
+                        "Terminal cell body inside the CNS with a single long axon",
+                        "Multiple short unmyelinated branches confined within the cord",
+                        "Absence of voltage-gated ion channels along the entire length"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "Which neurone type transmits action potentials directly from the central nervous system to skeletal muscles or glands?",
+                    options: [
+                        "A motor neurone",
+                        "A relay neurone",
+                        "A sensory neurone",
+                        "A rod photoreceptor"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "Where are the cell bodies of mammalian relay (intermediate) neurones located?",
+                    options: [
+                        "Inside the grey matter of the central nervous system",
+                        "Inside the dorsal root ganglion outside the spinal cord",
+                        "Embedded directly inside the concentric skin lamellae",
+                        "Attached to the neuromuscular junction on muscle fibres"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "What is the correct sequence of components in a typical cranial or spinal reflex arc?",
+                    options: [
+                        "Receptor → Sensory neurone → Relay neurone → Motor neurone → Effector",
+                        "Effector → Sensory neurone → Relay neurone → Motor neurone → Receptor",
+                        "Receptor → Motor neurone → Relay neurone → Sensory neurone → Effector",
+                        "Receptor → Relay neurone → Sensory neurone → Motor neurone → Effector"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "How does the human knee-jerk reflex differ from the corneal (blinking) reflex?",
+                    options: [
+                        "Knee-jerk is monosynaptic with no relay neurone; blinking uses a relay",
+                        "Knee-jerk requires conscious brain decisions; blinking bypasses the pons",
+                        "Knee-jerk uses only unmyelinated fibres; blinking uses no motor neurones",
+                        "Knee-jerk involves chemoreceptors; blinking involves skin baroreceptors"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "Why are reflex responses biologically important for animal survival?",
+                    options: [
+                        "Fast involuntary pathways protect tissues from harm without conscious delay",
+                        "Slow learned pathways maximise voluntary control over digestive smooth muscle",
+                        "They prevent sensory receptors from ever reaching threshold membrane potential",
+                        "They eliminate the need for ATP hydrolysis inside sodium-potassium pumps"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "Why are all sensory receptors described as 'biological transducers'?",
+                    options: [
+                        "They convert one form of stimulus energy into an electrical impulse",
+                        "They amplify the voltage amplitude of action potentials above +100 mV",
+                        "They transport neurotransmitter vesicles directly across the spinal cord",
+                        "They insulate long peripheral axons with concentric layers of myelin"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "Which type of sensory receptor detects changes in blood pH and dissolved carbon dioxide in the carotid bodies?",
+                    options: [
+                        "Chemoreceptors",
+                        "Mechanoreceptors",
+                        "Photoreceptors",
+                        "Thermoreceptors"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "Which specific stimulus activates a Pacinian corpuscle located deep within mammalian skin?",
+                    options: [
+                        "Changes in mechanical pressure and high-frequency vibration",
+                        "Changes in visible light wavelength across the retinal fovea",
+                        "Changes in core blood temperature inside the hypothalamus",
+                        "Changes in volatile odorant concentration inside nasal mucus"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "What occurs immediately when mechanical pressure deforms the concentric lamellae of a Pacinian corpuscle?",
+                    options: [
+                        "Stretch-mediated Na⁺ channels open, letting Na⁺ diffuse in to depolarise",
+                        "Voltage-gated K⁺ channels open, letting K⁺ diffuse out to hyperpolarise",
+                        "Sodium-potassium pumps reverse direction to pull Cl⁻ ions into the axon",
+                        "Myelin sheaths break open to release acetylcholine directly into the skin"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "Why does a Pacinian corpuscle stop firing impulses if constant, unchanging pressure is maintained on the skin?",
+                    options: [
+                        "Gel-filled lamellae redistribute pressure so the neurone membrane relaxes",
+                        "All intracellular sodium ions are permanently depleted within milliseconds",
+                        "The sensory neurone dies rapidly whenever mechanical pressure is sustained",
+                        "Voltage-gated potassium channels fuse permanently open during steady touch"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "What happens if a weak stimulus produces a generator potential of −62 mV in a sensory receptor (threshold = −55 mV)?",
+                    options: [
+                        "No action potential is generated along the sensory neurone",
+                        "A smaller action potential of +15 mV travels slowly to the CNS",
+                        "An action potential travels backwards away from the spinal cord",
+                        "Voltage-gated Na⁺ channels open briefly and then lock permanently"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "What is the typical resting potential across an unstimulated mammalian neurone plasma membrane?",
+                    options: [
+                        "Approximately −70 mV (inside negative relative to outside)",
+                        "Approximately +40 mV (inside positive relative to outside)",
+                        "Approximately −55 mV (inside neutral relative to outside)",
+                        "Approximately +70 mV (inside positive relative to outside)"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "How does the sodium-potassium pump contribute to establishing the resting potential?",
+                    options: [
+                        "Actively pumps 3 Na⁺ ions out for every 2 K⁺ ions pumped in using ATP",
+                        "Actively pumps 2 Na⁺ ions out for every 3 K⁺ ions pumped in using ATP",
+                        "Passively diffuses 3 Na⁺ ions in for every 2 K⁺ ions diffusing outward",
+                        "Actively pumps 3 K⁺ ions out for every 2 Cl⁻ ions pumped into cytoplasm"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "Aside from the Na⁺/K⁺ pump, what is the other major reason the inside of a resting axon is negatively charged at −70 mV?",
+                    options: [
+                        "Membrane is more permeable to K⁺ leak outward than Na⁺ leak inward",
+                        "Membrane is completely impermeable to K⁺ while Na⁺ diffuses freely in",
+                        "Voltage-gated sodium channels remain fully open throughout resting state",
+                        "Positively charged plasma proteins accumulate rapidly outside the myelin"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "Which ion movement directly causes the rapid DEPOLARISATION phase of an action potential from −55 mV to +40 mV?",
+                    options: [
+                        "Voltage-gated Na⁺ channels open and Na⁺ ions diffuse rapidly into the axon",
+                        "Voltage-gated K⁺ channels open and K⁺ ions diffuse rapidly out of the axon",
+                        "Sodium-potassium pumps accelerate to push Na⁺ ions into the extracellular fluid",
+                        "Stretch-mediated Cl⁻ channels open and Cl⁻ ions rush into the cytoplasm"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "Why is the rapid rise in membrane potential during depolarisation an example of positive feedback?",
+                    options: [
+                        "Na⁺ influx further depolarises the membrane, opening more voltage-gated Na⁺ channels",
+                        "K⁺ efflux hyperpolarises the membrane, closing every nearby voltage-gated Na⁺ channel",
+                        "ATP hydrolysis by the Na⁺/K⁺ pump immediately reverses the direction of local currents",
+                        "Myelin lipids thicken whenever membrane potential rises above the threshold value"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "What causes the REPOLARISATION phase of an action potential after the membrane potential peaks at +40 mV?",
+                    options: [
+                        "Voltage-gated Na⁺ channels close while voltage-gated K⁺ channels open for K⁺ efflux",
+                        "Voltage-gated K⁺ channels close while voltage-gated Na⁺ channels open for Na⁺ influx",
+                        "Both Na⁺ and K⁺ voltage-gated channels open simultaneously to reach 0 mV equilibrium",
+                        "Sodium-potassium pumps halt completely so extracellular Na⁺ diffuses passively inside"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "Why does the membrane potential briefly drop below −70 mV (hyperpolarisation / undershoot) at the end of repolarisation?",
+                    options: [
+                        "Voltage-gated K⁺ channels are slow to close, allowing excess K⁺ efflux",
+                        "Voltage-gated Na⁺ channels reopen briefly, pumping excess Na⁺ outward",
+                        "Chloride ions are actively pumped out of the axon by mitochondrial ATP",
+                        "The sodium-potassium pump stops functioning for several full seconds"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "Which statement accurately describes the 'all-or-nothing' principle of action potentials?",
+                    options: [
+                        "All stimuli above threshold trigger action potentials of identical +40 mV size",
+                        "Stronger stimuli trigger taller action potentials reaching +80 mV or +120 mV",
+                        "Sub-threshold stimuli trigger tiny action potentials that fade along the axon",
+                        "Every sensory neurone fires continuously at maximum rate regardless of input"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "Since all action potentials have the same amplitude, how does the nervous system encode a STRONGER stimulus?",
+                    options: [
+                        "Higher frequency of action potentials and activating more neurones",
+                        "Increasing the peak voltage of each spike from +40 mV up to +90 mV",
+                        "Doubling the thickness of the Schwann cell myelin sheath instantly",
+                        "Extending the duration of the absolute refractory period tenfold"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "Why does the refractory period ensure that action potentials travel in only ONE direction along an axon?",
+                    options: [
+                        "Voltage-gated Na⁺ channels behind the wave are inactivated and cannot reopen",
+                        "One-way mechanical valves inside the axoplasm block backward ion diffusion",
+                        "Nodes of Ranvier physically close shut immediately after every local current",
+                        "Schwann cells absorb all incoming sodium ions behind the depolarised zone"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "What are the two other key functions of the refractory period besides unidirectional propagation?",
+                    options: [
+                        "Produces discrete non-overlapping impulses and limits maximum firing frequency",
+                        "Doubles the peak depolarisation voltage and removes the need for K⁺ channels",
+                        "Converts sensory neurones into motor neurones and slows down local currents",
+                        "Prevents sodium-potassium pumps from using ATP and eliminates hyperpolarisation"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "How is an action potential propagated along an UNMYELINATED axon?",
+                    options: [
+                        "Local currents depolarise adjacent membrane sequentially in a continuous wave",
+                        "Electrical impulses leap directly from the cell body to the axon terminals",
+                        "Myelin sheaths squeeze intracellular sodium ions forward by peristalsis",
+                        "Action potentials jump across 2 mm gaps between insulated Schwann cells"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "Why can depolarisation NOT occur underneath the myelin sheath of a myelinated axon?",
+                    options: [
+                        "Lipid-rich Schwann cell layers act as an insulator blocking ion movement",
+                        "The axoplasm underneath myelin lacks dissolved sodium and potassium ions",
+                        "Myelin sheaths consume all ATP so membrane proteins denature beneath them",
+                        "Membrane potential beneath myelin is locked permanently at +40 mV"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "How does saltatory conduction dramatically increase conduction speed in a myelinated neurone?",
+                    options: [
+                        "Local currents jump from node of Ranvier to node, needing fewer depolarisations",
+                        "Schwann cells actively pump sodium ions along the outside of the neurone",
+                        "Myelin raises the threshold potential to −20 mV so spikes travel twice as tall",
+                        "Nodes of Ranvier eliminate the refractory period so impulses overlap fully"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "Why is saltatory conduction also more energy-efficient (uses less ATP) than unmyelinated conduction?",
+                    options: [
+                        "Na⁺/K⁺ pumps only need to restore ion gradients at the narrow nodes of Ranvier",
+                        "Myelinated neurones generate action potentials without any sodium-potassium pumps",
+                        "Schwann cells supply glucose directly to the axon to bypass aerobic respiration",
+                        "Potassium ions never leave the axon during repolarisation in myelinated fibres"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "Apart from myelination, which two factors increase the speed of nerve impulse conduction along an axon?",
+                    options: [
+                        "Wider axon diameter (less resistance) and higher temperature (faster diffusion)",
+                        "Narrower axon diameter (higher resistance) and lower temperature (less leak)",
+                        "Wider axon diameter (more resistance) and lower temperature (slower enzymes)",
+                        "Narrower axon diameter (faster pumps) and absence of extracellular sodium ions"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "In multiple sclerosis, the immune system damages myelin sheaths around CNS axons. What is the direct effect on impulses?",
+                    options: [
+                        "Saltatory conduction is disrupted, slowing or blocking impulse transmission",
+                        "Conduction speed doubles because more membrane area is exposed to sodium",
+                        "Resting potential shifts permanently to +60 mV across all sensory receptors",
+                        "Reflex arcs switch to using chemoreceptors instead of stretch mechanoreceptors"
+                    ],
+                    ans: 0
+                },
+                {
+                    q: "An action potential travels 45 cm along a myelinated motor axon in 5.0 ms. What is the conduction speed?",
+                    options: [
+                        "90 m s⁻¹",
+                        "9.0 m s⁻¹",
+                        "22.5 m s⁻¹",
+                        "111 m s⁻¹"
+                    ],
+                    ans: 0
+                }
+            ],
+
+            // 6 Classic OCR A 6-Mark Extended Response Questions
+            long: [
+                {
+                    q: "Compare the structure and function of sensory, relay, and motor neurones, and describe the pathway of a spinal reflex arc. (6 marks)",
+                    low: "Sensory neurones carry messages from receptors to the spinal cord, relay neurones are in the spinal cord, and motor neurones go to muscles. A reflex arc goes receptor, sensory, relay, motor, effector so it is very fast.",
+                    med: "Sensory neurones have a long dendron, a cell body positioned off to the side, and a shorter axon; they carry impulses from receptors to the CNS. Relay neurones are short, unmyelinated, and lie within the CNS linking sensory to motor neurones. Motor neurones have a cell body in the CNS with short dendrites and a long myelinated axon to an effector. In a reflex arc, a stimulus activates a receptor → sensory → relay → motor → effector for a rapid involuntary protective response.",
+                    high: "1. Sensory neurone: transmits impulses from sensory receptor to CNS; has a long dendron, cell body branching to the side (in the dorsal root ganglion), and shorter axon (usually myelinated).\n2. Relay (intermediate) neurone: lies wholly within CNS grey matter; has many short dendrites and a short unmyelinated axon connecting sensory to motor neurones.\n3. Motor neurone: transmits impulses from CNS to effector (muscle/gland); has a large cell body at one end inside the CNS with short dendrites and a long myelinated axon ending in motor end plates.\n4. Reflex arc sequence: Stimulus → Receptor (transducer) → Sensory neurone → Relay neurone (in CNS) → Motor neurone → Effector → Response.\n5. Speed & Protection: bypasses conscious processing in the cerebral cortex (only a few synapses), producing an automatic, rapid protective response (e.g., pulling hand from heat).\n6. Named variant: monosynaptic reflexes like the knee-jerk reflex omit the relay neurone (1 synapse only) for an even faster postural correction."
+                },
+                {
+                    q: "Explain how sensory receptors act as transducers, using the structure and mechanism of a Pacinian corpuscle as a detailed example. (6 marks)",
+                    low: "A transducer turns one kind of energy into electrical impulses. A Pacinian corpuscle is in the skin and has layers around a nerve ending. When you press on it, sodium channels open and make an action potential.",
+                    med: "A biological transducer converts stimulus energy into electrical energy (a generator potential). A Pacinian corpuscle is a mechanoreceptor made of a sensory neurone ending surrounded by concentric lamellae separated by gel. Mechanical pressure deforms the lamellae, stretching the neurone membrane and opening stretch-mediated Na⁺ channels. Na⁺ diffuses in, causing depolarisation (generator potential); if threshold is reached, an action potential fires.",
+                    high: "1. Transduction: sensory receptors are specific to one stimulus and convert its energy (e.g., mechanical pressure) into electrical energy (a generator potential / action potential).\n2. Pacinian structure: a mechanoreceptor deep in skin consisting of the unmyelinated tip of a sensory neurone surrounded by concentric layers of connective tissue (lamellae) separated by viscous gel.\n3. Resting state: at rest, stretch-mediated sodium ion (Na⁺) channels in the neurone ending are too narrow for Na⁺ to pass, maintaining a resting potential (~ −70 mV).\n4. Deformation: when mechanical pressure is applied, the concentric lamellae deform and press against the sensory neurone plasma membrane, stretching it.\n5. Generator potential: stretching widens/opens the stretch-mediated Na⁺ channels, allowing Na⁺ ions to diffuse rapidly into the neurone down their electrochemical gradient, depolarising the membrane (generator potential).\n6. Threshold & All-or-nothing: greater pressure opens more Na⁺ channels (larger generator potential); if depolarisation reaches threshold (~ −55 mV), voltage-gated Na⁺ channels open at the first node of Ranvier to trigger an action potential."
+                },
+                {
+                    q: "Explain how a mammalian neurone establishes and maintains a resting potential of approximately −70 mV. (6 marks)",
+                    low: "The sodium-potassium pump uses ATP to push sodium out and potassium in. More positive ions end up outside the cell than inside, so the inside is negative at −70 mV.",
+                    med: "The sodium-potassium pump uses ATP to actively transport 3 Na⁺ ions out of the axon for every 2 K⁺ ions pumped in, creating electrochemical gradients. The membrane is much more permeable to K⁺ than Na⁺ because K⁺ leak channels are open while Na⁺ channels are mostly closed. K⁺ ions diffuse out down their concentration gradient, making the inside negatively charged (−70 mV) relative to the outside.",
+                    high: "1. Active transport (Na⁺/K⁺ pump): carrier proteins hydrolyse ATP to actively pump 3 Na⁺ ions OUT of the axoplasm for every 2 K⁺ ions pumped IN.\n2. Concentration gradients: this establishes a higher concentration of Na⁺ outside the axon and a higher concentration of K⁺ inside the axon.\n3. Differential membrane permeability: at rest, voltage-gated Na⁺ and K⁺ channels are closed, but the membrane has many open K⁺ leak channels and very few open Na⁺ channels (much more permeable to K⁺ than Na⁺).\n4. Facilitated diffusion of K⁺: K⁺ ions diffuse OUT of the axon down their concentration gradient through open potassium channels.\n5. Negative interior: the net loss of positive ions (plus large negatively charged organic anions/proteins trapped inside the axoplasm) makes the inside negative relative to the outside.\n6. Electrochemical equilibrium: the negative interior pulls K⁺ back inward until the electrical pull balances the outward concentration gradient, stabilising resting potential at approximately −70 mV."
+                },
+                {
+                    q: "Describe the sequence of membrane permeability and ion movements that occur during an action potential (depolarisation, repolarisation, and hyperpolarisation). (6 marks)",
+                    low: "A stimulus opens sodium channels so sodium rushes in and makes the voltage go up to +40 mV. Then sodium channels close and potassium channels open so potassium goes out and the voltage drops back down below −70 mV before returning to normal.",
+                    med: "A stimulus depolarises the membrane to threshold (−55 mV), causing voltage-gated Na⁺ channels to open so Na⁺ rushes in by facilitated diffusion, reversing potential to +40 mV (depolarisation). At +40 mV, Na⁺ channels close and voltage-gated K⁺ channels open, so K⁺ diffuses out to restore negative potential (repolarisation). K⁺ channels close slowly, causing hyperpolarisation (~ −80 mV), before the Na⁺/K⁺ pump restores resting potential (−70 mV).",
+                    high: "1. Threshold: a stimulus/generator potential causes sufficient Na⁺ influx to depolarise the membrane from −70 mV to the threshold potential (−55 mV).\n2. Depolarisation (positive feedback): voltage-gated Na⁺ channels open rapidly; Na⁺ ions flood into the axon down their electrochemical gradient, triggering more Na⁺ channels to open until potential reverses to ~ +40 mV.\n3. Peak & Channel switching: at ~ +40 mV, voltage-gated Na⁺ channels close (inactivate) and voltage-gated K⁺ channels open.\n4. Repolarisation: K⁺ ions diffuse rapidly OUT of the axon down their electrochemical gradient, making the interior negative again.\n5. Hyperpolarisation (undershoot): voltage-gated K⁺ channels are slow to close, so excess K⁺ leaves the axon and membrane potential briefly overshoots below −70 mV (to ~ −80/−85 mV).\n6. Restoration: voltage-gated K⁺ channels close completely, and the Na⁺/K⁺ pump (using ATP) plus leak channels re-establish the resting ion distribution at −70 mV."
+                },
+                {
+                    q: "Explain how saltatory conduction increases the speed of nerve impulse transmission in myelinated neurones, and describe two other factors that affect conduction velocity. (6 marks)",
+                    low: "Myelinated neurones have Schwann cells wrapping around them with gaps called nodes of Ranvier. The impulse jumps from gap to gap which is much faster. Wider axons and warmer temperatures also make impulses go faster.",
+                    med: "Schwann cells wrap around the axon forming a lipid myelin sheath that acts as an electrical insulator, preventing ion movement beneath it. Voltage-gated Na⁺ channels are concentrated at the nodes of Ranvier. Local currents flow through the axoplasm so action potentials 'jump' from node to node (saltatory conduction), requiring fewer depolarisations. Wider axon diameter reduces internal resistance, and higher temperature speeds up ion diffusion and ATP synthesis.",
+                    high: "1. Insulation: Schwann cells wrap around the axon forming a lipid-rich myelin sheath that electrically insulates the axon membrane, preventing Na⁺/K⁺ exchange across myelinated regions.\n2. Nodes of Ranvier: voltage-gated Na⁺ and K⁺ channels are concentrated exclusively at the short uninsulated gaps (nodes of Ranvier) spaced ~1–3 mm apart.\n3. Local circuits & Saltatory conduction: Na⁺ influx at one node creates local electrical currents that diffuse rapidly along the axoplasm to depolarise the next node to threshold, so the action potential 'jumps' from node to node.\n4. Speed & Efficiency: far fewer depolarisations are needed per metre than in continuous unmyelinated propagation, boosting velocity up to ~120 m s⁻¹ and conserving ATP for Na⁺/K⁺ pumps.\n5. Factor 2 — Axon diameter: wider axons have a lower ratio of membrane surface area to axoplasm volume, reducing internal cytoplasmic resistance to local current flow and speeding up conduction.\n6. Factor 3 — Temperature: higher temperatures increase kinetic energy for faster Na⁺/K⁺ diffusion and increase respiratory enzyme activity (more ATP for Na⁺/K⁺ pumps), up to the point of protein denaturation."
+                },
+                {
+                    q: "Explain the cause and biological significance of the refractory period, and explain how the nervous system distinguishes between a weak and a strong stimulus. (6 marks)",
+                    low: "The refractory period is when the nerve cannot fire again right away because channels are closed. It stops impulses going backwards and keeps them separate. A strong stimulus makes more impulses happen per second.",
+                    med: "After an action potential, voltage-gated Na⁺ channels are temporarily inactivated and the membrane is hyperpolarised, creating the refractory period during which another action potential cannot be triggered. This ensures unidirectional propagation, keeps impulses discrete (non-overlapping), and limits maximum frequency. Because action potentials follow the all-or-nothing law (constant +40 mV amplitude), stronger stimuli are coded by a higher frequency of impulses and recruiting more neurones.",
+                    high: "1. Cause: immediately following depolarisation, voltage-gated Na⁺ channels enter an inactivated state (cannot reopen even if stimulated = absolute refractory period), followed by hyperpolarisation requiring a stronger stimulus to reach threshold (relative refractory period).\n2. Role 1 — Unidirectional transmission: the membrane section immediately behind an action potential is refractory, so local currents can only depolarise the resting membrane ahead of the wave.\n3. Role 2 — Discrete impulses: prevents consecutive action potentials from merging into one continuous depolarisation wave.\n4. Role 3 — Maximum frequency: sets an upper limit on the number of action potentials that can be transmitted per second.\n5. All-or-nothing law: any stimulus reaching threshold generates an action potential of identical amplitude (+40 mV), so stimulus strength is NOT coded by spike height.\n6. Coding intensity: a stronger stimulus produces a larger generator potential that crosses threshold more rapidly after each refractory period, increasing the FREQUENCY of action potentials (and recruiting more sensory neurones with higher thresholds)."
+                }
+            ],
+
+            // Fallback Process Sorter Data (2 stages x 5 steps = 10 marks)
+            sorterStages: [
+                {
+                    steps: [
+                        { id: 1, text: "Resting potential (−70 mV) is maintained by the Na⁺/K⁺ pump (3 Na⁺ out, 2 K⁺ in) and K⁺ leak channels." },
+                        { id: 2, text: "A stimulus opens Na⁺ channels, depolarising the membrane to the threshold potential (−55 mV)." },
+                        { id: 3, text: "Voltage-gated Na⁺ channels open rapidly; Na⁺ floods in (positive feedback), depolarising the axon to +40 mV." },
+                        { id: 4, text: "At +40 mV, Na⁺ channels close and voltage-gated K⁺ channels open; K⁺ diffuses out (repolarisation)." },
+                        { id: 5, text: "K⁺ channels close slowly causing brief hyperpolarisation (refractory period), then resting potential is restored." }
+                    ]
+                },
+                {
+                    steps: [
+                        { id: 1, text: "Mechanical pressure deforms the concentric lamellae of a Pacinian corpuscle in the skin." },
+                        { id: 2, text: "Stretching the neurone tip opens stretch-mediated Na⁺ channels, causing Na⁺ influx (generator potential)." },
+                        { id: 3, text: "Depolarisation reaches −55 mV threshold, triggering an action potential that jumps along nodes of Ranvier." },
+                        { id: 4, text: "The sensory neurone transmits impulses into the spinal cord to a relay neurone (and across to a motor neurone)." },
+                        { id: 5, text: "The motor neurone carries impulses rapidly to an effector muscle, producing an involuntary protective reflex." }
+                    ]
+                }
+            ]
+        };
+
+        // =========================================================================
+        // APPLICATION STATE
+        // =========================================================================
+        let state = {
+            match: { q: null, a: null, solved: [], batch: 0, qs: [], as: [] },
+            quiz: { queue: [], retry: [], current: null, correct: 0, isRetryRound: false },
+            long: { scores: {}, current: 0, answers: {} },
+            lab: {
+                mode: 'diagram', // 'diagram' or 'sorter'
+                activeChipId: null,
+                activeChipEl: null,
+                svgScore: 0,
+                sorterStages: [
+                    { order: [], locked: [false, false, false, false, false], score: 0 },
+                    { order: [], locked: [false, false, false, false, false], score: 0 }
+                ],
+                selectedSwap: null
+            },
+            streak: 0
+        };
+
+        let actionState = {
+            pastPapers: false,
+            rewatchPAGs: false,
+            flashcards: false,
+            glossary: false,
+            copyWork: false,
+            seeTeacher: false,
+            none: false,
+            flashcardTopic: "",
+            glossaryWords: "",
+            copyWho: "",
+            copyDate: "",
+            teacherDate: "",
+            submitted: false
+        };
+
+        // =========================================================================
+        // INITIALISATION & NAVIGATION
+        // =========================================================================
+        function enterApp() {
+            const splash = document.getElementById('splash-screen');
+            splash.style.opacity = '0';
+            setTimeout(() => {
+                splash.classList.add('hidden');
+                document.getElementById('app-header').classList.remove('hidden');
+                document.getElementById('main-content').classList.remove('hidden');
+                document.getElementById('main-body').classList.remove('overflow-hidden');
+                initApp();
+            }, 650);
+        }
+
+        function initApp() {
+            // 1. Setup Mix & Match
+            const mData = [...DATA.match].sort(() => Math.random() - 0.5);
+            state.match.qs = mData.map((m, i) => ({ t: m.q, id: i })).sort(() => Math.random() - 0.5);
+            state.match.as = mData.map((m, i) => ({ t: m.a, id: i })).sort(() => Math.random() - 0.5);
+            loadMatchBatch();
+
+            // 2. Setup Quiz (shuffled options + shuffled questions)
+            state.quiz.queue = DATA.quiz.map(q => {
+                const ansText = q.options[q.ans];
+                const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+                return { ...q, options: shuffled, ans: shuffled.indexOf(ansText) };
+            }).sort(() => Math.random() - 0.5);
+            nextQuiz();
+
+            // 3. Setup 6-Mark Questions
+            renderLong();
+
+            // 4. Setup Fallback Sorter
+            [0, 1].forEach(stageIdx => {
+                let items = [...DATA.sorterStages[stageIdx].steps];
+                do {
+                    items.sort(() => Math.random() - 0.5);
+                } while (items.every((item, idx) => item.id === idx + 1));
+                state.lab.sorterStages[stageIdx].order = items;
+                renderSorterStage(stageIdx);
+            });
+        }
+
+        function switchTab(id) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            document.getElementById(`nav-${id}`).classList.add('active');
+            document.getElementById(`tab-${id}`).classList.add('active');
+
+            if (id === 'dash') updateDashboard();
+        }
+
+        function updateStreak(isCorrect) {
+            const icon = document.getElementById('streak-icon');
+            if (isCorrect) {
+                state.streak++;
+                icon.classList.remove('animate-spike-flash', 'animate-shake', 'text-crimson-600');
+                icon.classList.add('text-volt-600');
+                void icon.offsetWidth;
+                icon.classList.add('animate-spike-flash');
+            } else {
+                state.streak = 0;
+                icon.classList.remove('animate-spike-flash', 'animate-shake', 'text-volt-600');
+                icon.classList.add('text-crimson-600');
+                void icon.offsetWidth;
+                icon.classList.add('animate-shake');
+            }
+            document.getElementById('streak-counter').innerText = state.streak;
+        }
+
+        // =========================================================================
+        // TAB 1: MIX & MATCH LOGIC
+        // =========================================================================
+        function loadMatchBatch() {
+            const qCol = document.getElementById('match-col-q');
+            const aCol = document.getElementById('match-col-a');
+            qCol.innerHTML = '';
+            aCol.innerHTML = '';
+
+            document.getElementById('match-round').innerText = state.match.batch + 1;
+
+            const start = state.match.batch * 6;
+            const end = start + 6;
+
+            const currentQs = state.match.qs.filter(item => item.id >= start && item.id < end);
+            const currentAs = state.match.as.filter(item => item.id >= start && item.id < end);
+
+            currentQs.forEach(item => {
+                if (state.match.solved.includes(item.id)) return;
+                const btn = document.createElement('button');
+                btn.className = "match-q w-full text-left p-4 rounded-xl shadow-sm border-2 border-frost-200 bg-white font-semibold hover:border-cobalt-500 transition-all text-axon-900 text-sm sm:text-base";
+                btn.innerText = item.t;
+                btn.dataset.id = item.id;
+                btn.onclick = () => handleMatch('q', item.id, btn);
+                qCol.appendChild(btn);
+            });
+
+            currentAs.forEach(item => {
+                if (state.match.solved.includes(item.id)) return;
+                const btn = document.createElement('button');
+                btn.className = "match-a w-full text-left p-4 rounded-xl shadow-sm border-2 border-frost-200 bg-white font-medium hover:border-volt-600 transition-all text-slate-700 text-sm";
+                btn.innerText = item.t;
+                btn.dataset.id = item.id;
+                btn.onclick = () => handleMatch('a', item.id, btn);
+                aCol.appendChild(btn);
+            });
+        }
+
+        function handleMatch(type, id, btn) {
+            if (state.match.solved.includes(id)) return;
+
+            document.querySelectorAll(`.match-${type}`).forEach(b => {
+                if (!state.match.solved.includes(parseInt(b.dataset.id))) {
+                    b.classList.remove('border-cobalt-600', 'bg-cobalt-50', 'border-volt-600', 'bg-volt-50');
+                }
+            });
+
+            if (type === 'q') {
+                state.match.q = state.match.q === id ? null : id;
+                if (state.match.q !== null) btn.classList.add('border-cobalt-600', 'bg-cobalt-50');
+            } else {
+                state.match.a = state.match.a === id ? null : id;
+                if (state.match.a !== null) btn.classList.add('border-volt-600', 'bg-volt-50');
+            }
+
+            if (state.match.q !== null && state.match.a !== null) {
+                const qb = document.querySelector(`.match-q[data-id="${state.match.q}"]`);
+                const ab = document.querySelector(`.match-a[data-id="${state.match.a}"]`);
+
+                if (state.match.q === state.match.a) {
+                    state.match.solved.push(state.match.q);
+                    qb.classList.add('hidden');
+                    ab.classList.add('hidden');
+                    updateStreak(true);
+
+                    const batchSolved = state.match.solved.filter(sid => sid >= state.match.batch * 6 && sid < (state.match.batch + 1) * 6).length;
+
+                    if (state.match.solved.length === 18) {
+                        document.getElementById('match-grid').classList.add('hidden');
+                        document.getElementById('match-complete').classList.remove('hidden');
+                    } else if (batchSolved === 6) {
+                        setTimeout(() => {
+                            state.match.batch++;
+                            loadMatchBatch();
+                        }, 400);
+                    }
+                } else {
+                    qb.classList.add('animate-shake', 'border-crimson-500', 'bg-red-50');
+                    ab.classList.add('animate-shake', 'border-crimson-500', 'bg-red-50');
+                    updateStreak(false);
+                    setTimeout(() => {
+                        qb.classList.remove('animate-shake', 'border-crimson-500', 'bg-red-50', 'border-cobalt-600', 'bg-cobalt-50');
+                        ab.classList.remove('animate-shake', 'border-crimson-500', 'bg-red-50', 'border-volt-600', 'bg-volt-50');
+                    }, 480);
+                }
+
+                state.match.q = null;
+                state.match.a = null;
+                document.getElementById('match-score').innerText = state.match.solved.length;
+            }
+        }
+
+        // =========================================================================
+        // TAB 2: KNOWLEDGE QUIZ LOGIC (30 Marks + Mastery Loop)
+        // =========================================================================
+        function nextQuiz() {
+            if (state.quiz.queue.length === 0) {
+                if (state.quiz.retry.length > 0) {
+                    state.quiz.queue = state.quiz.retry.sort(() => Math.random() - 0.5);
+                    state.quiz.retry = [];
+                    state.quiz.isRetryRound = true;
+                } else {
+                    document.getElementById('quiz-progress').innerText = "30 / 30";
+                    document.getElementById('quiz-container').classList.add('hidden');
+                    document.getElementById('quiz-complete').classList.remove('hidden');
+                    return;
+                }
+            }
+
+            state.quiz.current = state.quiz.queue.shift();
+            document.getElementById('quiz-progress').innerText = `${state.quiz.correct} / 30`;
+            document.getElementById('quiz-retry-badge').classList.toggle('hidden', !state.quiz.isRetryRound);
+            document.getElementById('quiz-question').innerText = state.quiz.current.q;
+
+            const opts = document.getElementById('quiz-options');
+            opts.innerHTML = '';
+            state.quiz.current.options.forEach((o, i) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-xl border border-axon-700 bg-axon-800 hover:border-volt-400 hover:bg-axon-700 transition-colors font-medium text-sm sm:text-base";
+                btn.innerText = o;
+                btn.onclick = () => handleQuiz(i);
+                opts.appendChild(btn);
+            });
+        }
+
+        function handleQuiz(selIdx) {
+            const isCorrect = selIdx === state.quiz.current.ans;
+            const allBtns = document.getElementById('quiz-options').children;
+
+            for (let i = 0; i < allBtns.length; i++) {
+                allBtns[i].className = "w-full text-left p-4 rounded-xl border border-axon-800 bg-axon-950 opacity-50 pointer-events-none text-sm sm:text-base";
+                if (i === selIdx) {
+                    if (isCorrect) {
+                        allBtns[i].className = "w-full text-left p-4 rounded-xl border-2 border-volt-400 bg-volt-500/20 text-volt-100 font-bold pointer-events-none shadow-[0_0_15px_rgba(132,204,22,0.3)] text-sm sm:text-base";
+                    } else {
+                        allBtns[i].className = "w-full text-left p-4 rounded-xl border-2 border-crimson-500 bg-crimson-600/25 text-red-200 font-bold pointer-events-none animate-shake text-sm sm:text-base";
+                    }
+                }
+                if (i === state.quiz.current.ans && !isCorrect) {
+                    allBtns[i].className = "w-full text-left p-4 rounded-xl border-2 border-cobalt-400 bg-cobalt-500/20 text-cobalt-100 font-semibold border-dashed pointer-events-none text-sm sm:text-base";
+                }
+            }
+
+            if (isCorrect) {
+                state.quiz.correct++;
+                updateStreak(true);
+            } else {
+                state.quiz.retry.push(state.quiz.current);
+                updateStreak(false);
+            }
+
+            setTimeout(nextQuiz, 1100);
+        }
+
+        // =========================================================================
+        // TAB 3: 6-MARK EXTENDED RESPONSE LOGIC (36 Marks)
+        // =========================================================================
+        function renderLong() {
+            const lCont = document.getElementById('long-list');
+            lCont.innerHTML = '';
+
+            const longTotal = Object.values(state.long.scores).reduce((a, b) => a + b, 0);
+            document.getElementById('long-score-live').innerText = longTotal;
+
+            if (state.long.current >= DATA.long.length) {
+                lCont.innerHTML = `
+                    <div class="text-center py-12 bg-volt-50 border border-volt-500 rounded-2xl text-volt-800">
+                        <i class="ph-fill ph-check-circle text-6xl mb-3 text-volt-600"></i>
+                        <h3 class="font-display text-2xl font-bold">All Six 6-Mark Questions Completed!</h3>
+                        <p class="mt-2 text-volt-700 font-medium">Total Extended Response Score: ${longTotal} / 36</p>
+                        <button onclick="state.long.current = 0; renderLong();" class="mt-5 px-5 py-2.5 bg-white border border-volt-200 text-volt-800 rounded-xl font-bold text-sm hover:bg-volt-100 transition-colors">Review Questions Again</button>
+                    </div>
+                `;
+                return;
+            }
+
+            const i = state.long.current;
+            const item = DATA.long[i];
+            const isMarked = state.long.scores[i] !== undefined;
+            const currentAnswer = state.long.answers[i] || '';
+
+            const div = document.createElement('div');
+            div.className = "bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-frost-200 animate-slide-in";
+            div.innerHTML = `
+                <div class="flex justify-between items-center mb-4">
+                    <span class="bg-cobalt-50 text-cobalt-700 border border-cobalt-200 font-bold text-xs uppercase tracking-wider px-3 py-1 rounded-lg">Question ${i + 1} of 6</span>
+                    <div class="flex gap-2">
+                        ${i > 0 ? `<button onclick="state.long.current--; renderLong();" class="text-xs font-bold text-slate-500 hover:text-cobalt-700 px-2 py-1"><i class="ph-bold ph-arrow-left"></i> Prev</button>` : ''}
+                        ${i < 5 ? `<button onclick="state.long.current++; renderLong();" class="text-xs font-bold text-slate-500 hover:text-cobalt-700 px-2 py-1">Skip <i class="ph-bold ph-arrow-right"></i></button>` : ''}
+                    </div>
+                </div>
+                <h3 class="font-display font-bold text-lg sm:text-xl text-axon-900 mb-4 leading-snug">${item.q}</h3>
+
+                <textarea id="long-in-${i}" class="w-full h-36 p-4 border-2 border-frost-200 rounded-xl mb-4 outline-none focus:border-cobalt-600 bg-frost-50 text-slate-800 text-sm sm:text-base" placeholder="Write your exam-standard response using precise OCR A terminology..." oninput="state.long.answers[${i}] = this.value" ${isMarked ? 'disabled' : ''}>${currentAnswer}</textarea>
+
+                ${!isMarked ? `<button onclick="revealLong(${i})" id="btn-reveal-${i}" class="w-full bg-axon-900 hover:bg-axon-800 text-white font-bold py-3.5 rounded-xl transition-colors shadow-sm">Submit &amp; Reveal Leveled Model Answers</button>` : ''}
+
+                <div id="long-fb-${i}" class="${isMarked ? '' : 'hidden'} mt-6 space-y-4">
+                    <div class="bg-red-50 p-4 rounded-xl border border-red-200">
+                        <strong class="text-crimson-600 block mb-1 text-sm uppercase tracking-wider">Low Level (1–2 Marks) — GCSE-style phrasing</strong>
+                        <p class="text-sm text-slate-800">${item.low}</p>
+                    </div>
+                    <div class="bg-amber-50 p-4 rounded-xl border border-amber-200">
+                        <strong class="text-amber-800 block mb-1 text-sm uppercase tracking-wider">Medium Level (3–4 Marks) — Good A-Level detail</strong>
+                        <p class="text-sm text-slate-800">${item.med}</p>
+                    </div>
+                    <div class="bg-volt-50 p-4 rounded-xl border border-volt-200">
+                        <strong class="text-volt-800 block mb-1 text-sm uppercase tracking-wider">High Level (5–6 Marks) — Full OCR A Mark-Scheme Precision</strong>
+                        <p class="text-sm text-slate-800 whitespace-pre-line leading-relaxed">${item.high}</p>
+                    </div>
+
+                    <div class="mt-4 border-t border-frost-200 pt-4">
+                        <p class="font-bold text-axon-900 mb-3 text-sm">Self-assess and award yourself marks (0–6):</p>
+                        <div class="flex gap-2 flex-wrap mb-5">
+                            ${[0, 1, 2, 3, 4, 5, 6].map(m => `
+                                <button onclick="setLongScore(${i}, ${m})" class="w-11 h-11 rounded-xl border-2 font-bold transition-all ${state.long.scores[i] === m ? 'bg-cobalt-600 text-white border-cobalt-700 shadow-md scale-110' : 'border-frost-200 bg-white text-slate-700 hover:border-cobalt-500 hover:text-cobalt-700'}">${m}</button>
+                            `).join('')}
+                        </div>
+                        <button onclick="nextLong()" class="w-full bg-volt-600 hover:bg-volt-700 text-white font-bold py-3.5 rounded-xl transition-colors flex justify-center items-center gap-2 shadow-sm">
+                            ${i === 5 ? 'Finish Extended Response' : 'Next 6-Mark Question'} <i class="ph-bold ph-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            lCont.appendChild(div);
+        }
+
+        function revealLong(i) {
+            document.getElementById(`long-in-${i}`).disabled = true;
+            document.getElementById(`btn-reveal-${i}`).classList.add('hidden');
+            document.getElementById(`long-fb-${i}`).classList.remove('hidden');
+        }
+
+        function setLongScore(qId, score) {
+            state.long.scores[qId] = score;
+            if (score >= 4) updateStreak(true);
+            renderLong();
+        }
+
+        function nextLong() {
+            state.long.current++;
+            renderLong();
+        }
+
+        // =========================================================================
+        // TAB 4: OSCILLOSCOPE & CONDUCTION LAB (10 Marks — Dual Mode)
+        // =========================================================================
+        function getLabScore() {
+            const sorterTotal = state.lab.sorterStages[0].score + state.lab.sorterStages[1].score;
+            return Math.max(state.lab.svgScore, sorterTotal);
+        }
+
+        function updateLabScoreUI() {
+            document.getElementById('lab-score').innerText = getLabScore();
+        }
+
+        function toggleLabMode() {
+            const diagramEl = document.getElementById('lab-mode-diagram');
+            const sorterEl = document.getElementById('lab-mode-sorter');
+            const btn = document.getElementById('lab-mode-toggle');
+            const sub = document.getElementById('lab-subtitle');
+
+            if (state.lab.mode === 'diagram') {
+                state.lab.mode = 'sorter';
+                diagramEl.classList.add('hidden');
+                sorterEl.classList.remove('hidden');
+                btn.innerHTML = `<i class="ph-bold ph-swap"></i> Switch to Oscilloscope Lab`;
+                sub.innerText = "Arrange each 5-step neuronal mechanism in chronological order using tap-to-swap or ▲/▼ buttons. (2 stages × 5 marks)";
+            } else {
+                state.lab.mode = 'diagram';
+                sorterEl.classList.add('hidden');
+                diagramEl.classList.remove('hidden');
+                btn.innerHTML = `<i class="ph-bold ph-swap"></i> Switch to Process Sorter`;
+                sub.innerText = "Tap a label from the bank, then tap the matching drop zone on the trace or diagram. (2 stages × 5 marks)";
+            }
+        }
+
+        // --- Mode A: SVG Tap-to-Place ---
+        function showSvgSlide(idx) {
+            clearSvgChip();
+            [0, 1].forEach(i => {
+                document.getElementById(`svg-slide-${i}`).classList.toggle('hidden', i !== idx);
+                const tabBtn = document.getElementById(`svg-tab-${i}`);
+                if (i === idx) {
+                    tabBtn.className = "flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 border-cobalt-600 bg-cobalt-600 text-white shadow-sm transition-all";
+                } else {
+                    tabBtn.className = "flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 border-frost-200 bg-white text-slate-700 hover:border-cobalt-500 transition-all";
+                }
+            });
+        }
+
+        function clearSvgChip() {
+            document.querySelectorAll('.tap-chip.selected').forEach(el => el.classList.remove('selected'));
+            state.lab.activeChipId = null;
+            state.lab.activeChipEl = null;
+        }
+
+        function handleSvgChipClick(id, el) {
+            if (el.classList.contains('used')) return;
+            if (state.lab.activeChipEl === el) {
+                clearSvgChip();
+                return;
+            }
+            clearSvgChip();
+            el.classList.add('selected');
+            state.lab.activeChipId = id;
+            state.lab.activeChipEl = el;
+        }
+
+        function handleSvgZoneClick(expectedId, zoneEl) {
+            if (zoneEl.classList.contains('zone-locked')) return;
+            if (!state.lab.activeChipId) {
+                zoneEl.classList.add('animate-shake');
+                setTimeout(() => zoneEl.classList.remove('animate-shake'), 350);
+                return;
+            }
+
+            if (state.lab.activeChipId === expectedId) {
+                zoneEl.innerText = state.lab.activeChipEl.innerText;
+                zoneEl.classList.add('zone-locked');
+                state.lab.activeChipEl.classList.remove('selected');
+                state.lab.activeChipEl.classList.add('used');
+
+                state.lab.svgScore++;
+                updateLabScoreUI();
+                updateStreak(true);
+                clearSvgChip();
+            } else {
+                updateStreak(false);
+                zoneEl.classList.add('animate-shake', 'border-crimson-500', 'bg-red-50');
+                setTimeout(() => zoneEl.classList.remove('animate-shake', 'border-crimson-500', 'bg-red-50'), 420);
+            }
+        }
+
+        // --- Mode B: Fallback Process Sorter ---
+        function showSorterStage(idx) {
+            state.lab.selectedSwap = null;
+            [0, 1].forEach(i => {
+                document.getElementById(`sorter-stage-${i}`).classList.toggle('hidden', i !== idx);
+                const tabBtn = document.getElementById(`sort-tab-${i}`);
+                if (i === idx) {
+                    tabBtn.className = "flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 border-cobalt-600 bg-cobalt-600 text-white shadow-sm transition-all";
+                } else {
+                    tabBtn.className = "flex-1 py-3 px-4 rounded-xl font-bold text-sm border-2 border-frost-200 bg-white text-slate-700 hover:border-cobalt-500 transition-all";
+                }
+            });
+        }
+
+        function renderSorterStage(stageIdx) {
+            const container = document.getElementById(`sorter-list-${stageIdx}`);
+            const stage = state.lab.sorterStages[stageIdx];
+            container.innerHTML = '';
+
+            stage.order.forEach((step, posIdx) => {
+                const isLocked = stage.locked[posIdx];
+                const isSelected = state.lab.selectedSwap &&
+                                   state.lab.selectedSwap.stageIdx === stageIdx &&
+                                   state.lab.selectedSwap.posIdx === posIdx;
+
+                const card = document.createElement('div');
+                card.className = `sort-card flex items-center gap-3 p-3.5 rounded-xl border-2 ${isLocked ? 'locked-correct cursor-default' : 'bg-frost-50 border-frost-200 hover:border-cobalt-400 cursor-pointer'} ${isSelected ? 'selected-swap' : ''}`;
+
+                const badge = document.createElement('div');
+                badge.className = `w-8 h-8 shrink-0 rounded-lg font-display font-bold flex items-center justify-center text-sm ${isLocked ? 'bg-volt-600 text-white' : 'bg-axon-900 text-volt-400'}`;
+                badge.innerHTML = isLocked ? `<i class="ph-bold ph-check"></i>` : `${posIdx + 1}`;
+
+                const textEl = document.createElement('div');
+                textEl.className = "flex-1 text-sm font-medium text-slate-800";
+                textEl.innerText = step.text;
+                if (!isLocked) {
+                    textEl.onclick = () => handleSorterTap(stageIdx, posIdx);
+                }
+
+                const controls = document.createElement('div');
+                controls.className = "flex flex-col gap-1 shrink-0";
+                if (!isLocked) {
+                    const upBtn = document.createElement('button');
+                    upBtn.type = "button";
+                    upBtn.className = "p-1.5 rounded-lg bg-white border border-frost-200 hover:bg-cobalt-50 text-slate-600 disabled:opacity-30";
+                    upBtn.innerHTML = `<i class="ph-bold ph-caret-up text-xs"></i>`;
+                    upBtn.disabled = posIdx === 0 || stage.locked[posIdx - 1];
+                    upBtn.onclick = (e) => { e.stopPropagation(); swapSorterSteps(stageIdx, posIdx, posIdx - 1); };
+
+                    const downBtn = document.createElement('button');
+                    downBtn.type = "button";
+                    downBtn.className = "p-1.5 rounded-lg bg-white border border-frost-200 hover:bg-cobalt-50 text-slate-600 disabled:opacity-30";
+                    downBtn.innerHTML = `<i class="ph-bold ph-caret-down text-xs"></i>`;
+                    downBtn.disabled = posIdx === 4 || stage.locked[posIdx + 1];
+                    downBtn.onclick = (e) => { e.stopPropagation(); swapSorterSteps(stageIdx, posIdx, posIdx + 1); };
+
+                    controls.appendChild(upBtn);
+                    controls.appendChild(downBtn);
+                } else {
+                    controls.innerHTML = `<span class="text-xs font-bold text-volt-700 bg-volt-100 px-2 py-1 rounded">Step ${posIdx + 1}</span>`;
+                }
+
+                card.appendChild(badge);
+                card.appendChild(textEl);
+                card.appendChild(controls);
+                container.appendChild(card);
+            });
+
+            document.getElementById(`sorter-badge-${stageIdx}`).innerText = `${stage.score} / 5 Locked`;
+            updateLabScoreUI();
+        }
+
+        function handleSorterTap(stageIdx, posIdx) {
+            const stage = state.lab.sorterStages[stageIdx];
+            if (stage.locked[posIdx]) return;
+            if (!state.lab.selectedSwap || state.lab.selectedSwap.stageIdx !== stageIdx) {
+                state.lab.selectedSwap = { stageIdx, posIdx };
+                renderSorterStage(stageIdx);
+            } else if (state.lab.selectedSwap.posIdx === posIdx) {
+                state.lab.selectedSwap = null;
+                renderSorterStage(stageIdx);
+            } else {
+                const fromPos = state.lab.selectedSwap.posIdx;
+                state.lab.selectedSwap = null;
+                swapSorterSteps(stageIdx, fromPos, posIdx);
+            }
+        }
+
+        function swapSorterSteps(stageIdx, fromPos, toPos) {
+            const stage = state.lab.sorterStages[stageIdx];
+            if (stage.locked[fromPos] || stage.locked[toPos]) return;
+            const temp = stage.order[fromPos];
+            stage.order[fromPos] = stage.order[toPos];
+            stage.order[toPos] = temp;
+            renderSorterStage(stageIdx);
+        }
+
+        function checkSorterOrder(stageIdx) {
+            const stage = state.lab.sorterStages[stageIdx];
+            let newlyLocked = 0;
+            let wrong = 0;
+
+            stage.order.forEach((step, posIdx) => {
+                if (!stage.locked[posIdx]) {
+                    if (step.id === posIdx + 1) {
+                        stage.locked[posIdx] = true;
+                        newlyLocked++;
+                    } else {
+                        wrong++;
+                    }
+                }
+            });
+
+            stage.score = stage.locked.filter(Boolean).length;
+            const fb = document.getElementById(`sorter-fb-${stageIdx}`);
+            fb.classList.remove('hidden', 'bg-volt-50', 'text-volt-800', 'bg-cobalt-50', 'text-cobalt-800');
+
+            if (stage.score === 5) {
+                fb.classList.add('bg-volt-50', 'text-volt-800');
+                fb.innerText = "Perfect chronological order! All 5 steps locked (+5/5 marks).";
+                document.getElementById(`sorter-check-${stageIdx}`).classList.add('hidden');
+                updateStreak(true);
+            } else {
+                fb.classList.add('bg-cobalt-50', 'text-cobalt-800');
+                fb.innerText = `${stage.score} of 5 steps are in the correct position. Reorder the remaining ${wrong} step(s) and check again.`;
+                if (newlyLocked > 0) updateStreak(true);
+                else updateStreak(false);
+            }
+            renderSorterStage(stageIdx);
+        }
+
+        // =========================================================================
+        // TAB 5: ACTION PLAN GATE & RESOURCES (Bonus up to +6 marks)
+        // =========================================================================
+        function toggleAction(action) {
+            const cb = document.getElementById(`chk-${action}`);
+            if (action === 'none') {
+                if (cb.checked) {
+                    ['pastPapers', 'rewatchPAGs', 'flashcards', 'glossary', 'copyWork', 'seeTeacher'].forEach(a => {
+                        document.getElementById(`chk-${a}`).checked = false;
+                        actionState[a] = false;
+                    });
+                }
+            } else {
+                if (cb.checked) {
+                    document.getElementById('chk-none').checked = false;
+                    actionState.none = false;
+                }
+            }
+            actionState[action] = cb.checked;
+
+            document.getElementById('input-flashcards').classList.toggle('hidden', !actionState.flashcards);
+            document.getElementById('input-glossary').classList.toggle('hidden', !actionState.glossary);
+            document.getElementById('input-copyWork').classList.toggle('hidden', !actionState.copyWork);
+            document.getElementById('input-seeTeacher').classList.toggle('hidden', !actionState.seeTeacher);
+        }
+
+        function submitActionPlan() {
+            if (actionState.flashcards) actionState.flashcardTopic = document.getElementById('val-flashcards').value.trim();
+            if (actionState.glossary) actionState.glossaryWords = document.getElementById('val-glossary').value.trim();
+            if (actionState.copyWork) {
+                actionState.copyWho = document.getElementById('val-copyWho').value.trim();
+                actionState.copyDate = document.getElementById('val-copyDate').value.trim();
+            }
+            if (actionState.seeTeacher) actionState.teacherDate = document.getElementById('val-seeTeacher').value.trim();
+
+            actionState.submitted = true;
+            document.getElementById('action-plan-section').classList.add('hidden');
+            document.getElementById('resources-grid').classList.remove('hidden');
+            document.getElementById('resources-intro').innerText = "Exam Prep & Electrophysiology guides unlocked! Use these resources to complete your action plan.";
+        }
+
+        function calculateBonusAndList() {
+            let rawBonus = 0;
+            let actionListHtml = "";
+
+            if (actionState.pastPapers) {
+                rawBonus += 3;
+                actionListHtml += "<div>• Complete OCR A Module 5.1.3 past paper questions</div>";
+            }
+            if (actionState.rewatchPAGs) {
+                rawBonus += 3;
+                actionListHtml += "<div>• Practice oscilloscope speed maths &amp; reflex arc diagrams</div>";
+            }
+            if (actionState.flashcards) {
+                if (actionState.flashcardTopic) rawBonus += 3;
+                actionListHtml += `<div>• Flashcards (Weak topic: <span class="font-bold text-axon-900">${escapeHtml(actionState.flashcardTopic || 'Not specified')}</span>)</div>`;
+            }
+            if (actionState.glossary) {
+                if (actionState.glossaryWords) rawBonus += 3;
+                actionListHtml += `<div>• Glossary (Words: <span class="font-bold text-axon-900">${escapeHtml(actionState.glossaryWords || 'Not specified')}</span>)</div>`;
+            }
+            if (actionState.copyWork) {
+                if (actionState.copyWho || actionState.copyDate) rawBonus += 3;
+                actionListHtml += `<div>• Copy missed notes (From: <span class="font-bold text-axon-900">${escapeHtml(actionState.copyWho || 'N/A')}</span> on <span class="font-bold text-axon-900">${escapeHtml(actionState.copyDate || 'N/A')}</span>)</div>`;
+            }
+            if (actionState.seeTeacher) {
+                if (actionState.teacherDate) rawBonus += 3;
+                actionListHtml += `<div>• See teacher for help (Date: <span class="font-bold text-axon-900">${escapeHtml(actionState.teacherDate || 'N/A')}</span>)</div>`;
+            }
+
+            if (actionState.none || actionListHtml === "") {
+                actionListHtml = "<div class='italic text-slate-400'>No reflection actions selected.</div>";
+            }
+
+            const cappedBonus = Math.min(rawBonus, 6);
+            return { bonus: cappedBonus, html: actionListHtml };
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+
+        // =========================================================================
+        // TAB 6: DASHBOARD, MODALS & SCORECARD REPORT (Out of 100)
+        // =========================================================================
+        function updateDashboard() {
+            const longTotal = Object.values(state.long.scores).reduce((a, b) => a + b, 0);
+            const labTotal = getLabScore();
+            const { bonus } = calculateBonusAndList();
+
+            document.getElementById('dash-match').innerText = state.match.solved.length;
+            document.getElementById('dash-quiz').innerText = state.quiz.correct;
+            document.getElementById('dash-long').innerText = longTotal;
+            document.getElementById('dash-lab').innerText = labTotal;
+            document.getElementById('dash-bonus').innerText = bonus;
+        }
+
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            if (id === 'name-modal') {
+                document.getElementById('name-error').classList.add('hidden');
+                document.getElementById('student-name-input').focus();
+            }
+        }
+
+        function closeModals() {
+            ['name-modal', 'scorecard-modal', 'modal-receptors', 'modal-reflex', 'modal-maths'].forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.add('hidden');
+                el.classList.remove('flex');
+            });
+        }
+
+        function generateScorecard() {
+            const nameInput = document.getElementById('student-name-input');
+            const name = nameInput.value.trim();
+            if (!name) {
+                document.getElementById('name-error').classList.remove('hidden');
+                nameInput.focus();
+                return;
+            }
+
+            closeModals();
+
+            const matchScore = state.match.solved.length;
+            const quizScore = state.quiz.correct;
+            const labScore = getLabScore();
+            const longTotal = Object.values(state.long.scores).reduce((a, b) => a + b, 0);
+            const { bonus, html } = calculateBonusAndList();
+
+            const total = matchScore + quizScore + labScore + longTotal + bonus; // Max 100
+            const percent = Math.round((total / 100) * 100);
+
+            document.getElementById('sc-name').innerText = name;
+            document.getElementById('sc-match').innerText = matchScore;
+            document.getElementById('sc-quiz').innerText = quizScore;
+            document.getElementById('sc-lab').innerText = labScore;
+            document.getElementById('sc-long').innerText = longTotal;
+            document.getElementById('sc-bonus').innerText = bonus;
+            document.getElementById('sc-action-list').innerHTML = html;
+            document.getElementById('sc-total').innerText = total;
+            document.getElementById('sc-percent').innerText = percent;
+            document.getElementById('sc-timestamp').innerText = new Date().toLocaleString('en-GB');
+
+            openModal('scorecard-modal');
+
+            // UK English (en-GB) Web Speech API sign-off
+            try {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(
+                        `Well done ${name}. Thank you for locking in to your Neuronal Communication revision today.`
+                    );
+                    utterance.lang = 'en-GB';
+                    const voices = window.speechSynthesis.getVoices();
+                    const ukVoice = voices.find(v => v.lang === 'en-GB');
+                    if (ukVoice) utterance.voice = ukVoice;
+                    window.speechSynthesis.speak(utterance);
+                }
+            } catch (err) {
+                // Fail silently if speech synthesis is restricted
+            }
+        }
+    </script>
+</body>
+</html>
