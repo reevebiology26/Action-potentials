@@ -825,6 +825,47 @@
         </div>
     </div>
 
+    <!-- HONESTY CHECK MODAL (Triggered when awarding 5 or 6 marks) -->
+    <div id="honesty-modal" class="fixed inset-0 bg-axon-950/85 z-[60] hidden items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white p-7 sm:p-8 rounded-2xl max-w-md w-full shadow-2xl relative border-t-8 border-volt-500 animate-slide-in text-center">
+            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-volt-50 text-volt-700 border border-volt-200 mb-3">
+                <i class="ph-fill ph-scales text-4xl"></i>
+            </div>
+            <h2 class="font-display text-2xl font-extrabold text-axon-900 mb-3">Honesty Check!</h2>
+            <p class="text-slate-700 font-medium text-sm sm:text-base leading-relaxed bg-frost-50 p-4 rounded-xl border border-frost-200 mb-6">
+                "Are you being honest there? Re-read your answer with the mark scheme next to it. Check your terminology and order is correct. Don’t be over generous or you may not be unidirectional! lol"
+                <span class="block text-cobalt-700 font-bold mt-2 text-xs uppercase tracking-wider">— Mr Reeve</span>
+            </p>
+            <div class="flex flex-col gap-2.5">
+                <button onclick="confirmHonestyScore()" class="w-full py-3 bg-cobalt-600 hover:bg-cobalt-700 text-white rounded-xl transition-colors font-bold shadow-md text-sm sm:text-base">
+                    Yes, I checked — Award <span id="honesty-marks-label">5</span> Marks
+                </button>
+                <button onclick="closeModals()" class="w-full py-2.5 bg-frost-100 hover:bg-frost-200 text-axon-900 rounded-xl transition-colors font-bold text-sm">
+                    Let me re-read &amp; check again
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HIGH SCORE CELEBRATION MODAL (Triggered when final total > 75) -->
+    <div id="high-score-modal" class="fixed inset-0 bg-axon-950/90 z-[70] hidden items-center justify-center p-4 backdrop-blur-md">
+        <div class="bg-white p-7 sm:p-8 rounded-3xl max-w-md w-full shadow-[0_0_55px_rgba(132,204,22,0.35)] relative border-4 border-volt-500 animate-slide-in text-center">
+            <div class="animate-spike-flash inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-volt-50 text-volt-600 border-2 border-volt-300 mb-3">
+                <i class="ph-fill ph-trophy text-4xl"></i>
+            </div>
+            <div class="inline-block bg-cobalt-50 text-cobalt-700 border border-cobalt-200 font-mono font-extrabold text-xs uppercase tracking-widest px-3.5 py-1 rounded-full mb-3">
+                Final Score: <span id="high-score-val">0</span> / 100
+            </div>
+            <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-axon-900 mb-3">Outstanding Effort!</h2>
+            <p class="text-slate-700 font-medium text-sm sm:text-base leading-relaxed bg-frost-50 p-4 rounded-2xl border border-frost-200 mb-6">
+                "Wow, that’s a great score! Mr Reeve is proud of you. If you think this app helped you, why not drop him an email to say what you liked or how it could be improved… you know you want to!"
+            </p>
+            <button onclick="closeHighScoreModal()" class="w-full py-3.5 bg-gradient-to-r from-cobalt-600 to-volt-600 hover:from-cobalt-700 hover:to-volt-700 text-white rounded-xl transition-all font-bold shadow-md text-sm sm:text-base flex items-center justify-center gap-2">
+                <i class="ph-bold ph-arrow-left"></i> Back to My Score Card
+            </button>
+        </div>
+    </div>
+
     <!-- APP LOGIC -->
     <script>
         // =========================================================================
@@ -1226,7 +1267,7 @@
         let state = {
             match: { q: null, a: null, solved: [], batch: 0, qs: [], as: [] },
             quiz: { queue: [], retry: [], current: null, correct: 0, isRetryRound: false },
-            long: { scores: {}, current: 0, answers: {} },
+            long: { scores: {}, current: 0, answers: {}, pendingHonesty: null },
             lab: {
                 mode: 'diagram', // 'diagram' or 'sorter'
                 activeChipId: null,
@@ -1563,6 +1604,25 @@
         }
 
         function setLongScore(qId, score) {
+            // Trigger Mr Reeve's Honesty Check modal whenever a student selects 5 or 6 marks
+            if (score >= 5) {
+                state.long.pendingHonesty = { qId, score };
+                document.getElementById('honesty-marks-label').innerText = score;
+                openModal('honesty-modal');
+                return;
+            }
+            applyLongScore(qId, score);
+        }
+
+        function confirmHonestyScore() {
+            if (!state.long.pendingHonesty) return;
+            const { qId, score } = state.long.pendingHonesty;
+            state.long.pendingHonesty = null;
+            closeModals();
+            applyLongScore(qId, score);
+        }
+
+        function applyLongScore(qId, score) {
             state.long.scores[qId] = score;
             if (score >= 4) updateStreak(true);
             renderLong();
@@ -1902,11 +1962,18 @@
         }
 
         function closeModals() {
-            ['name-modal', 'scorecard-modal', 'modal-receptors', 'modal-reflex', 'modal-maths'].forEach(id => {
+            ['name-modal', 'scorecard-modal', 'modal-receptors', 'modal-reflex', 'modal-maths', 'honesty-modal', 'high-score-modal'].forEach(id => {
                 const el = document.getElementById(id);
                 el.classList.add('hidden');
                 el.classList.remove('flex');
             });
+            state.long.pendingHonesty = null;
+        }
+
+        function closeHighScoreModal() {
+            const el = document.getElementById('high-score-modal');
+            el.classList.add('hidden');
+            el.classList.remove('flex');
         }
 
         function generateScorecard() {
@@ -1941,6 +2008,12 @@
             document.getElementById('sc-timestamp').innerText = new Date().toLocaleString('en-GB');
 
             openModal('scorecard-modal');
+
+            // Trigger celebratory pop-up on top of the scorecard if final score is over 75
+            if (total > 75) {
+                document.getElementById('high-score-val').innerText = total;
+                openModal('high-score-modal');
+            }
 
             // UK English (en-GB) Web Speech API sign-off
             try {
